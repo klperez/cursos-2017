@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bioestadística</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Bioestadística">
+  <meta name="author" content="Kevin Pérez - Ing de Sistemas - Estadístico - (E) MSc. Ciencia de Datos">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="libraries/widgets/bootstrap/css/bootstrap.css"></link>
+<link rel=stylesheet href="libraries/widgets/quiz/css/demo.css"></link>
+<link rel=stylesheet href="libraries/widgets/interactive/css/aceeditor.css"></link>
+<link rel=stylesheet href="libraries/widgets/nvd3/css/nv.d3.css"></link>
+<link rel=stylesheet href="libraries/widgets/nvd3/css/rNVD3.css"></link>
+<link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  <script src="libraries/widgets/nvd3/js/jquery-1.8.2.min.js"></script>
+<script src="libraries/widgets/nvd3/js/d3.v3.min.js"></script>
+<script src="libraries/widgets/nvd3/js/nv.d3.min-new.js"></script>
+<script src="libraries/widgets/nvd3/js/fisheye.js"></script>
+
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <aside class="gdbar">
+    <img src="assets/img/unicordoba3.png">
+  </aside>
+  <hgroup class="auto-fadein">
+    <h1>Bioestadística</h1>
+    <h2>Programa de Bacteriología</h2>
+    <p>Kevin Pérez - Ing de Sistemas - Estadístico - (E) MSc. Ciencia de Datos<br/>Departamento de Matemáticas y Estadística - Universidad de Córdoba</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Contenido programático</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><strong>Unidad de aprendizaje Nº 1.</strong> Estadística descriptiva </p>
+
+<ul class = "build incremental">
+<li>Conceptos Básicos.</li>
+<li>Organización de datos.</li>
+<li>Medidas de tendencia central, posición y dispersión.</li>
+<li>Representaciones gráficas y análisis exploratorio de datos (AED)</li>
+<li>Aplicaciones en el campo de la Biología. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-2" style="background:;">
+  <hgroup>
+    <h2>Contenido programático</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><strong>Unidad de aprendizaje Nº 2.</strong> Teoría de probabilidad</p>
+
+<ul class = "build incremental">
+<li>Elementos de la teroría de la probabilidad.</li>
+<li>Probabilidad condicional, independencia y teorema de Bayes. </li>
+<li>Variables aleatorias.</li>
+<li>Distribuciones de probabilidad, discretas y continuas.</li>
+<li>Aplicaciones en el campo de la Biología. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Contenido programático</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><strong>Unidad de aprendizaje Nº 3.</strong> Distribuciones muestrales</p>
+
+<ul class = "build incremental">
+<li>Distribuciones muestrales con uno o más parámetros</li>
+<li>Estimación puntual </li>
+<li>Aplicaciones en el campo de la Biología. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Contenido programático</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><strong>Unidad de aprendizaje Nº 4.</strong> Estimación de parámetros y pruebas de hipótesis</p>
+
+<ul class = "build incremental">
+<li>Estimación por intervalos de confianza </li>
+<li>Pruebas de hipótesis en una población.</li>
+<li>Pruebas de hipótesis en dos poblaciones.</li>
+<li>Pruebas de hipótesis no paramétricas.</li>
+<li>Aplicaciones en el campo de la Biología. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>Referencias</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li><p>Estadística para Biología y Ciencias de la salud, J Susan Milton, 3.ª Edición, McGraw Hill. </p></li>
+<li><p>Curso elemental de Estadística y Pobabilidad, Luis Rincon, 1.ª Edición, UNAM.</p></li>
+<li><p>Introducción a R, R Development Core Team, Versión 1.0.1 (2000-05-16), CRAN, 
+<a href="https://cran.r-project.org/doc/contrib/R-intro-1.1.0-espanol.1.pdf">https://cran.r-project.org/doc/contrib/R-intro-1.1.0-espanol.1.pdf</a></p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>Conceptos Generales</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>¿Qué es Estadística?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Conceptos Generales</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>La <em><strong>Estadística</strong></em> se ocupa del manejo de la información que pueda ser cuantificada. Implica esto la descripción de con juntos de datos y la inferencia a partir de la información recolectada de un fenómeno de interés. La función principal de la estadística abarca: Resumir, Simplificar, Comparar, Relacionar, Proyectar. Entre las tareas que debe enfrentar un estudio estadístico están:</p>
+
+<ul class = "build incremental">
+<li><p>Delimitar con precisión la población de referencia o el conjunto de datos en estudio, las unidades que deben ser observadas, las características o variables que serán medidas u observadas.</p></li>
+<li><p>Estrategias de Observación: Censo, Muestreo, Diseño de Experimental</p></li>
+<li><p>Recolección y Registro de la información</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Conceptos Generales</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li><p>Depuración de la información.</p></li>
+<li><p>Construcción de Tablas.</p></li>
+<li><p>Análisis Estadístico:</p>
+
+<ul>
+<li>Producción de resúmenes gráficos y numéricos.</li>
+<li>Interpretación de resultados.</li>
+</ul>
+
+<p>Cuando los datos comprenden toda la población de referencia, hablamos de un Censo y cuando solo comprometen una parte de ella, hablamos de una muestra. En ambos casos es pertinente un análisis Descriptivo. En el segundo caso un análisis Inferencial.      </p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Conceptos Generales</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>A grandes rasgos podemos decir que una <em><strong>Población</strong></em> es el conjunto de toda posible información, o de los objetos, que permite estudiar un fenómeno de interés. </p>
+
+<ul class = "build incremental">
+<li><p>Una <em><strong>muestra</strong></em> es un subconjunto de información representativa de una población.</p></li>
+<li><p>Las <em><strong>Variables</strong></em> resultan ser aquellas características de interés que desean ser medidas sobre los objetos o individuos seleccionados. En la mayoría de los casos lo que se pretende es estimar, a partir de la información recolectada de una muestra, características desconocidas de los objetos en dicha población de interés.</p></li>
+<li><p>Las características desconocidas de una población serán llamadas <em><strong>Parámetros</strong></em>. Las características calculadas a partir de una muestra son llamadas <em><strong>Estadísticas</strong></em>. Una Inferencia es una generalización obtenida a partir de una muestra aleatoria.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>Conceptos Generales</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>La Estadística puede dividirse en dos grandes ramas: Estadística Descriptiva y Estadística Inferencial.</p>
+
+<ul class = "build incremental">
+<li><p><em><strong>Estadística descriptiva:</strong></em> Es el conjunto de métodos usados para la organización y presentación (descripción) de la información recolectada. La información recolectada puede ser catalogada de dos maneras: Datos Cualitativos y Cuantitativos.</p></li>
+<li><p><em><strong>Estadística inferencial:</strong></em> Comprende los métodos y procedimientos para deducir propiedades (hacer inferencias) de una población, a partir de una pequeña parte de la misma (muestra).</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-11" style="background:;">
+  <article data-timings="">
+    
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Contenido programático'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='Contenido programático'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Contenido programático'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Contenido programático'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='Referencias'>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='Conceptos Generales'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='Conceptos Generales'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='Conceptos Generales'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='Conceptos Generales'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='Conceptos Generales'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='NA'>
+         11
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  <script src="libraries/widgets/bootstrap/js/bootstrap.min.js"></script>
+<script src="libraries/widgets/bootstrap/js/bootbox.min.js"></script>
+<script src="libraries/widgets/quiz/js/jquery.quiz.js"></script>
+<script src="libraries/widgets/quiz/js/mustache.min.js"></script>
+<script src="libraries/widgets/quiz/js/quiz-app.js"></script>
+<script src="libraries/widgets/interactive/js/ace/js/ace.js"></script>
+<script src="libraries/widgets/interactive/js/opencpu-0.5.js"></script>
+<script src="libraries/widgets/interactive/js/interactive.js"></script>
+
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<script>  
+  $(function (){ 
+    $("#example").popover(); 
+    $("[rel='tooltip']").tooltip(); 
+  });  
+  </script>  
+  
+  <script src="shared/shiny.js" type="text/javascript"></script>
+  <script src="shared/slider/js/jquery.slider.min.js"></script>
+  <script src="shared/bootstrap/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="shared/slider/css/jquery.slider.min.css"></link>
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
