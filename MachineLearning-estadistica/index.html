@@ -188,6 +188,273 @@ Cambridge, Massachusetts.</p></li>
 </slide>
 
 <slide class="" id="slide-7" style="background:;">
+  <hgroup>
+    <h2>Motivación</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Reconocido a nivel mundial en la academia</p>
+
+<ul>
+<li><a href="https://www.ualberta.ca/computing-science/graduate-studies/programs-and-admissions/statistical-machine-learning">Phd. in Machine Learning University of Alberta</a></li>
+<li><a href="http://www.ml.cmu.edu/prospective-students/ml-phd.html">Phd. in Machine Learning Carnegie Mellon University</a></li>
+</ul></li>
+<li><p>Alta demanda laboral </p>
+
+<ul>
+<li><a href="http://hagutierrezro.blogspot.com.co/p/jobs.html">Statistical Jobs</a></li>
+<li><a href="https://hbr.org/2012/10/data-scientist-the-sexiest-job-of-the-21st-century">Data Scientist</a></li>
+</ul></li>
+<li><p>Un deporte moderno </p>
+
+<ul>
+<li><a href="https://www.kaggle.com/competitions">Competencias</a></li>
+<li><a href="http://www.netflixprize.com">Premios</a></li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-8" style="background:;">
+  <hgroup>
+    <h2>Que es <em>Machine Learning</em></h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li><p>Construcción/uso de algoritmos que <em><strong>aprenden</strong></em> de los datos </p></li>
+<li><p>Más información implica mejor <em><strong>desempeño</strong></em></p></li>
+<li><p>Soluciones previas implican <em><strong>Experiencia</strong></em> </p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Ejemplo</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Etiquetar un cuadrado: Tamaño y borde  ---- Color </p></li>
+<li><p>Previas observaciones (Etiquetadas por personas): </p></li>
+</ul>
+
+<p><center><img src="assets/img/img1.png" alt=""></center></p>
+
+<ul>
+<li><p>Tarea de la maquina: <em><strong>Etiquetar</strong></em> un nuevo cuadrado </p></li>
+<li><p>Resultado: Éxito o Fracaso! </p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>Formulación</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/img2.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Que no es <em>Machine Learning</em></h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p><em><strong>No</strong></em> es machine learning </p>
+
+<ul>
+<li>Determinar el color que se presenta con mayor frecuencia </li>
+<li>Calcular el tamaño promedio del cuadrado </li>
+</ul></li>
+<li><p><em><strong>La Meta principal</strong></em>: Construir modelos para la predicción  </p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-12" style="background:;">
+  <hgroup>
+    <h2>Un problema de  Regresión</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/img3.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>Predicción</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/img4.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    <h2><em>Statistical Learning</em></h2>
+  </hgroup>
+  <article data-timings="">
+    <p>El <em>Statistical Learning</em> se refiere al vasto conjunto de herramientas para la <em>comprensión de los datos</em>. Estas herramientas pueden ser clasificadas <em>supervisadas</em> o <em>no supervisadas</em>.</p>
+
+<ul class = "build incremental">
+<li><p><em>supervised statistical learning:</em> Implica la construcción de un modelo estadístico para predecir, o estimar, una <em>salida</em> basada en una o más <em>entradas</em>.</p></li>
+<li><p><em>unsupervised statistical learning:</em> Con estos modelos, existen <em>entradas</em> pero no existen salidas supervisadas, sin embargo se puede aprender de la estructura de los datos.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>Por que estimar \(f\)</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Existen dos razones principales por las cuales quisiéramos estimar \(f\): <em><strong>Predicción</strong></em> e <em><strong>Inferencia</strong></em>, teniendo en cuenta que: </p>
+
+<p>\[\mathbf{Y}= f(\mathbf{Y})+ \epsilon\]</p>
+
+<p>Asumiendo las restricciones de cada modelo y teniendo en cuenta la naturaleza de cada unas las variables involucradas en el mismo.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-16" style="background:;">
+  <hgroup>
+    <h2>Predicción</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>En muchas situaciones, un conjunto de <em>entradas</em> \(X\) se encuentran disponibles, pero la salida \(Y\) no puede ser obtenida fácilmente. En esta situación y asumiendo que el termino de error es cero, podemos predecir \(Y\) utilizando </p>
+
+<p>\[\hat{Y}=\hat{f}(X),\]
+Donde \(\hat{f}\) representa nuestra estimación para \(f\) y \(\hat{Y}\) representa la predicción resultante para \(Y\). </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-17" style="background:;">
+  <hgroup>
+    <h2>Predicción</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Bajo estas condiciones \(\hat{f}\) a menudo es considerada una <em><strong>caja negra</strong></em> y en este sentido no se tiene en cuenta o nos interesa la forma de la función \(\hat{f}\) siempre que de ella resulten buenas predicciones. </p>
+
+<p><center><img src="assets/img/img5.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>Inferencia</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>En este caso a menudo el interés se centra no solo en una buena predicción, también en la forma en que \(Y\) se ve afectada por los cambios en \(X_1, \ldots, X_p\). En otras palabras estamos interesados en la relación que guarden \(X\) y \(Y\) o en los cambios de \(Y\) como función de \(X_1, \ldots, X_p\). En este sentido es lógico tratar de responder las siguientes preguntas</p>
+
+<ul class = "build incremental">
+<li>¿Qué predictores están asociados con la respuesta?</li>
+<li>¿Cuál es la relación entre la respuesta y cada predictor?</li>
+<li>¿Se puede resumir adecuadamente la relación entre \(Y\) y cada predictor, 
+usando una ecuación lineal, o es la relación más complicada?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-19" style="background:;">
+  <hgroup>
+    <h2>Como estimamos \(f\)</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Hablando de una manera muy general y teniendo en cuenta que queremos encontrar una función \(\hat{f}\) tal que \(Y\approx \hat{f}(X)\) para cada observación \((X, Y)\), los métodos estadísticos para esta tarea pueden ser clasificados como: </p>
+
+<ul>
+<li>Métodos Paramétricos </li>
+<li>Métodos No Paramétricos </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-20" style="background:;">
+  <hgroup>
+    <h2>Métodos Paramétricos</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Los métodos paramétricos involucran un enfoque de dos pasos para el planteamiento del modelo</p>
+
+<ol>
+<li>Se asumen unos supuestos acerca de la forma funcional de \(f\), por ejemplo, un supuesto muy simple es que \(f\) es lineal en \(X\):</li>
+</ol>
+
+<p>\[f(X)= \beta_0+\beta_1X_1+\beta_2X_2+\cdots +\beta_pX_p\]
+2. Una vez el modelo fue seleccionado, necesitamos un procedimiento de ajuste. En el caso del modelo lineal necesitamos estimar los parámetros \(\beta_0, \beta_1, \ldots, \beta_p\), esto es, encontrar los valores de esos parámetros tal que </p>
+
+<p>\[Y\approx \beta_0+\beta_1X_1+\beta_2X_2+\cdots +\beta_pX_p\]</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-21" style="background:;">
+  <hgroup>
+    <h2>Métodos Paramétricos</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/img6.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-22" style="background:;">
+  <hgroup>
+    <h2>Métodos No Paramétricos</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Los métodos no paramétricos hacen o lanzan supuestos explícitos acerca de la forma funcional de \(f\), en lugar de eso buscan una estimación de \(f\) que se aproxima a los puntos de los datos como sea posible sin ser demasiado áspera o sinuosa (ondulada).</p>
+
+<p><center><img src="assets/img/img5.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-23" style="background:;">
+  <hgroup>
+    <h2>Compensación entre flexibilidad e interpretabilidad</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Los métodos estadísticos del <em>machine learning</em> propuestos anteriormente algunos son menos flexibles o menos restrictivos, en el sentido de que pueden producir sólo una gama relativamente pequeña de formas para estimar \(f\), otros métodos como el <em>thin plate splines</em> son mucho más flexibles porque pueden generar una gama mucho más amplia de formas posibles para estimar \(f\)</p>
+
+<p><center><img src="assets/img/img7.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-24" style="background:;">
   <article data-timings="">
     
   </article>
@@ -236,8 +503,110 @@ Cambridge, Massachusetts.</p></li>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=7 title='NA'>
+        data-slide=7 title='Motivación'>
          7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='Que es <em>Machine Learning</em>'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='Ejemplo'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='Formulación'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='Que no es <em>Machine Learning</em>'>
+         11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='Un problema de  Regresión'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='Predicción'>
+         13
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=14 title='<em>Statistical Learning</em>'>
+         14
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=15 title='Por que estimar \(f\)'>
+         15
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=16 title='Predicción'>
+         16
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=17 title='Predicción'>
+         17
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=18 title='Inferencia'>
+         18
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=19 title='Como estimamos \(f\)'>
+         19
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=20 title='Métodos Paramétricos'>
+         20
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=21 title='Métodos Paramétricos'>
+         21
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=22 title='Métodos No Paramétricos'>
+         22
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=23 title='Compensación entre flexibilidad e interpretabilidad'>
+         23
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=24 title='NA'>
+         24
       </a>
     </li>
   </ul>
