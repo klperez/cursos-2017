@@ -273,8 +273,550 @@ Los métodos no paramétricos hacen o lanzan supuestos explícitos acerca de la 
 
 ## Compensación entre flexibilidad e interpretabilidad 
 
-Los métodos estadísticos del _machine learning_ propuestos anteriormente algunos son menos flexibles o menos restrictivos, en el sentido de que pueden producir sólo una gama relativamente pequeña de formas para estimar $f$, otros métodos como el _thin plate splines_ son mucho más flexibles porque pueden generar una gama mucho más amplia de formas posibles para estimar $f$
+Los métodos estadísticos del _machine learning_ propuestos anteriormente algunos son menos flexibles o menos restrictivos, en el sentido de que pueden producir sólo una gama relativamente pequeña de formas para estimar $f$, otros métodos como el _thin plate splines_ son mucho más flexibles porque pueden generar una gama mucho más amplia de formas posibles para estimar $f$. 
 
 <center>![](assets/img/img7.png)</center>
 
 ---
+
+## Componentes de un predictor
+
+
+<br>
+
+<center> pregunta -> data de entrada -> características -></center>
+
+<center> algoritmos -> parámetros -> evaluación </center>
+
+---
+
+## Ejemplo SPAM 
+
+</br>
+
+<center> `pregunta` -> data de entrada -> características -></center>
+
+<center> algoritmos -> parámetros -> evaluación </center>
+
+</br>
+
+__Comienza con una pregunta muy general__
+
+Puedo detectar automáticamente los emails que son SPAM de los que no ?
+
+
+__Más especifica__
+
+Puedo utilizar características cuantitativas para clasificar los emails como SPAM/HAM
+
+---
+
+## Ejemplo SPAM 
+
+</br>
+
+<center> pregunta -> `data de entrada` -> características -></center>
+
+<center> algoritmos -> parámetros -> evaluación </center>
+
+</br>
+
+Véase `help(spam)` en el paquete `kernlab`
+
+---
+
+
+## Ejemplo SPAM
+
+</br>
+
+<center> pregunta -> data de entrada -> `características` -></center>
+
+<center> algoritmos -> parámetros -> evaluación </center>
+
+</br>
+
+
+<b>
+Dear Jeff, 
+
+Can you send me your address so I can send you the invitation? 
+
+Thanks,
+
+Ben
+</b>
+
+---
+
+## Ejemplo SPAM 
+
+
+</br>
+
+<center> pregunta -> data de entrada -> `características` -></center>
+
+<center> algoritmos -> parámetros -> evaluación </center>
+</br>
+
+<b> 
+
+Dear Jeff, 
+
+Can <rt>you</rt> send me your address so I can send <rt>you</rt> the invitation? 
+
+Thanks,
+
+Ben
+</b>
+
+</br>
+
+Frecuencia de `you` $= 2/17 = 0.118$
+
+---
+
+## Ejemplo SPAM 
+
+</br>
+
+<center> pregunta -> data de entrada -> `características` -></center>
+
+<center> algoritmos -> parámetros -> evaluación </center>
+</br>
+
+
+
+
+```r
+suppressMessages(suppressWarnings(library(kernlab))) 
+data(spam)
+head(spam, 3)[, 1:11]
+```
+
+```
+##   make address  all num3d  our over remove internet order mail receive
+## 1 0.00    0.64 0.64     0 0.32 0.00   0.00     0.00  0.00 0.00    0.00
+## 2 0.21    0.28 0.50     0 0.14 0.28   0.21     0.07  0.00 0.94    0.21
+## 3 0.06    0.00 0.71     0 1.23 0.19   0.19     0.12  0.64 0.25    0.38
+```
+
+---
+
+## Ejemplo SPAM 
+
+<center> pregunta -> data de entrada -> características -></center>
+
+<center> `algoritmos` -> parámetros -> evaluación </center>
+
+
+
+```r
+plot(density(spam$your[spam$type == "nonspam"]),
+     col = "blue", main = "", xlab = "Frecuencia de 'your'", 
+     frame.plot = F)
+lines(density(spam$your[spam$type == "spam"]), col = "red")
+```
+
+<img src="assets/fig/unnamed-chunk-2-1.png" title="plot of chunk unnamed-chunk-2" alt="plot of chunk unnamed-chunk-2" style="display: block; margin: auto;" />
+
+---
+
+## Ejemplo SPAM 
+
+<center> pregunta -> data de entrada -> características -></center>
+
+<center> `algoritmos` -> parámetros -> evaluación </center>
+
+</br></br>
+
+__Nuestro algoritmo__
+
+* Encuentre un valor $C$. 
+* __frecuencia de 'your' $>$ C__ prediga "spam"
+
+---
+
+## Ejemplo SPAM 
+
+
+```r
+plot(density(spam$your[spam$type == "nonspam"]),
+     col = "blue", main = "", xlab = "Frecuencia de 'your'", 
+     frame.plot = F)
+lines(density(spam$your[spam$type == "spam"]), col = "red")
+abline(v = 0.5,col = "black")
+```
+
+<img src="assets/fig/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" />
+
+
+---
+
+## Ejemplo SPAM 
+
+
+<center> pregunta -> data de entrada -> características -></center>
+
+<center>algoritmos-> parámetros -> `evaluación` </center>
+
+
+```r
+prediction <- ifelse(spam$your > 0.5, "spam", "nonspam")
+table(prediction,spam$type)/length(spam$type)
+```
+
+```
+##           
+## prediction   nonspam      spam
+##    nonspam 0.4590306 0.1017170
+##    spam    0.1469246 0.2923278
+```
+</br>
+<center>
+Precisión $ \approx 0.459 + 0.292 = 0.751$
+</center>
+
+---
+
+## Orden de la importancia relativa 
+
+<center> pregunta -> data de entrada -> características -> algoritmos <center/>
+
+---
+
+## Basura entra = Basura sale 
+
+<center> pregunta -> `data de entrada` -> características -></center>
+
+<center> algoritmos -> parámetros -> evaluación </center>
+
+1. Puede ser fácil (movie películas -> nuevos ratings)
+2. Puede ser difícil (data de genomas -> enfermedades)
+3. Si se puede (más data -> mejores modelos)
+4. Es el paso más importante ¡
+
+---
+
+## Características 
+
+<center> pregunta -> data de entrada -> `características` -></center>
+
+<center> algoritmos -> parámetros -> evaluación </center>
+
+**Propiedades de las buenas características**
+
+- llevar a la comprensión de los datos 
+- conservar la información relevante
+- son creadas con base a el conocimiento experto
+
+**Errores comunes**
+
+- Tratar de automatizar la selección de características 
+- No prestar atención a las particularidades de los datos 
+- Despreciar información innecesariamente 
+
+---
+
+## Temas a considerar 
+
+<center>![](assets/img/img8.png)</center>
+
+---
+
+## Compensación en predicción 
+
+- Interpretabilidad vs Precisión 
+
+- Velocidad vs Precisión 
+
+- Simplicidad vs Precisión 
+
+- Escalabilidad vs Precisión
+
+---
+
+## Error dentro vs Error fuera de la muestra 
+
+_**In Sample Error**_: Es la tasa de error que se obtiene en el mismo conjunto de datos que utilizó para construir su predictor. A veces llamado error de resubstitución.
+
+_**Out of Sample Error**_: La tasa de error que obtiene en un nuevo conjunto de datos. A veces llamado error de generalización.
+
+_**Ideas principales**_
+
+- _**Out of Sample Error**_ es lo que nos preocupa 
+
+- El _**In Sample Error**_ $<$ _**Out of Sample Error**_
+
+- La razón principal es el sobre ajuste 
+    * Acomodar su algoritmo con los datos que tiene
+
+---
+
+
+## Error dentro vs Error fuera de la muestra 
+
+
+```r
+suppressMessages(suppressWarnings(library(kernlab)))
+data(spam); set.seed(333)
+smallSpam <- spam[sample(dim(spam)[1],size = 10),]
+spamLabel <- (smallSpam$type == "spam")*1 + 1
+plot(smallSpam$capitalAve,col = spamLabel, frame.plot = FALSE, pch = 19)
+```
+
+<img src="assets/fig/unnamed-chunk-5-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" style="display: block; margin: auto;" />
+
+---
+
+## Regla de predicción 1
+
+* capitalAve $>$ 2.7 = "spam"
+* capitalAve $<$ 2.40 = "nonspam"
+* capitalAve entre 2.40 y 2.45 = "spam"
+* capitalAve entre 2.45 y 2.7 = "nonspam"
+
+---
+
+## Aplicando la regla 1 a `smallSpam`
+
+
+```r
+rule1 <- function(x){
+  prediction <- rep(NA,length(x))
+  prediction[x > 2.7] <- "spam"
+  prediction[x < 2.40] <- "nonspam"
+  prediction[(x >= 2.40 & x <= 2.45)] <- "spam"
+  prediction[(x > 2.45 & x <= 2.70)] <- "nonspam"
+  return(prediction)
+}
+table(rule1(smallSpam$capitalAve),smallSpam$type)
+```
+
+```
+##          
+##           nonspam spam
+##   nonspam       5    0
+##   spam          0    5
+```
+
+---
+
+## Regla de predicción 2
+
+* capitalAve $>$ 2.40 = "spam"
+* capitalAve $\leq$ 2.40 = "nonspam"
+
+
+---
+
+## Apliclando la Regla 2 a `smallSpam`
+
+
+
+```r
+rule2 <- function(x){
+  prediction <- rep(NA,length(x))
+  prediction[x > 2.8] <- "spam"
+  prediction[x <= 2.8] <- "nonspam"
+  return(prediction)
+}
+table(rule2(smallSpam$capitalAve),smallSpam$type)
+```
+
+```
+##          
+##           nonspam spam
+##   nonspam       5    1
+##   spam          0    4
+```
+
+---
+
+## Aplicando a la data completa `spam`
+
+
+```r
+table(rule1(spam$capitalAve), spam$type)
+```
+
+```
+##          
+##           nonspam spam
+##   nonspam    2141  588
+##   spam        647 1225
+```
+
+```r
+table(rule2(spam$capitalAve), spam$type)
+```
+
+```
+##          
+##           nonspam spam
+##   nonspam    2224  642
+##   spam        564 1171
+```
+
+---
+
+## Aplicando a la data completa `spam`
+
+
+```r
+mean(rule1(spam$capitalAve) == spam$type)
+```
+
+```
+## [1] 0.7315801
+```
+
+```r
+mean(rule2(spam$capitalAve) == spam$type)
+```
+
+```
+## [1] 0.7378831
+```
+
+---
+
+## La precisión 
+
+
+```r
+sum(rule1(spam$capitalAve) == spam$type)
+```
+
+```
+## [1] 3366
+```
+
+```r
+sum(rule2(spam$capitalAve) == spam$type)
+```
+
+```
+## [1] 3395
+```
+
+
+---
+
+## Que sucede? 
+
+<center>`Sobre ajuste`</center>
+
+* La data tiene dos partes 
+    * Patrones 
+    * Ruido
+* La meta de una predicción es encontrar patrones 
+* Siempre se puede diseñar un predictor perfecto en la muestra
+* Se capturan ambas patrones y ruidos cuando haces eso  
+* El predictor no funcionará tan bien en nuevas muestras
+
+---
+
+## Diseño de un estudio de predicción 
+
+1. Defina su tasa de error 
+2. Divida la data en:
+  * Preparación, Prueba, Validación (opcional)
+3. En la data de preparación escoja las características (variables) 
+  * Utilice `cross-validation`
+4. En la data de preparación se escoja la función
+  * Utilice `cross-validation`
+6. Si no se hace validación 
+  * Aplique 1x (Una vez) al conjunto de prueba
+7. Si se hace validación
+  * Aplique al conjunto de prueba y refine 
+  * Aplique 1x (Una vez) al conjunto de validación 
+
+
+---
+
+## Diseño de un estudio de predicción 
+
+<center>![](assets/img/img9.png)</center>
+
+---
+
+## Reglas básicas para el diseño
+
+* Si tiene un tamaño de muestra grande
+    * 60% Preparación
+    * 20% Prueba
+    * 20% Validación
+* Si tiene un tamaño de muestra medio 
+    * 60% Preparación
+    * 40% Prueba
+* Si tiene un tamaño de muestra pequeño
+    * Haga `cross validation`
+    * Reporte la advertencia de tamaño de muestra pequeño 
+
+---
+
+## Terminos básicos 
+
+En general, __Positivo__ = identificados y __negativo__ = rechazado. Por lo tanto:
+
+__Verdadero positivo__ = identificado correctamente 
+
+__Falso positivo__ = identificado incorrectamente 
+
+__Verdadero negativo__ = rechazado correctamente 
+
+__Falso negativo__ = rechazado incorrectamente 
+
+_Ejemplo de un test Medico_:
+
+__Verdadero positivo__ = Personas enfermas correctamente diagnosticadas como enfermas
+
+__Falso positivo__= Personas sanas identificadas incorrectamente como enfermas
+
+__Verdadero negativo__ = Gente sana correctamente identificada como saludable
+
+__Falso negativo__ = Personas enfermas identificadas incorrectamente como saludables.
+
+---
+
+## Cantidades clave 
+
+<center>![](assets/img/img10.png)</center>
+
+---
+
+## Cantidades clave como fracciones 
+
+<center>![](assets/img/img11.png)</center>
+
+---
+
+## Para datos continuos 
+
+- **Error cuadrático medio**
+
+$$\frac{1}{n}\sum_{i=1}^n (prediccion_i-verdadero_i)^2$$
+
+- **Raíz error cuadrático medio**
+
+$$\sqrt{\frac{1}{n}\sum_{i=1}^n (prediccion_i-verdadero_i)^2}$$
+
+---
+
+## Medidas comunes de error
+
+1. Error cuadrático medio
+  * Datos continuos, sensible a los `outliers`
+2. Desviación media absoluta 
+  * Datos continuos, A menudo más robusta
+3. Sensibilidad _Sensitivity_ 
+  * Si desea perder algunos positivos
+4. Especificidad _Specificity_
+  * Si quieres algunos negativos llamados positivos
+5. Precisión _Accuracy_
+  * Pondera falsos positivos/negativos igualmente
+6. Concordancia _Concordance_
+  * Un ejemplo en [kappa](http://en.wikipedia.org/wiki/Cohen%27s_kappa)
+
+

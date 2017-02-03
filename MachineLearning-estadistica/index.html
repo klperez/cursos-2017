@@ -446,7 +446,7 @@ usando una ecuación lineal, o es la relación más complicada?</li>
     <h2>Compensación entre flexibilidad e interpretabilidad</h2>
   </hgroup>
   <article data-timings="">
-    <p>Los métodos estadísticos del <em>machine learning</em> propuestos anteriormente algunos son menos flexibles o menos restrictivos, en el sentido de que pueden producir sólo una gama relativamente pequeña de formas para estimar \(f\), otros métodos como el <em>thin plate splines</em> son mucho más flexibles porque pueden generar una gama mucho más amplia de formas posibles para estimar \(f\)</p>
+    <p>Los métodos estadísticos del <em>machine learning</em> propuestos anteriormente algunos son menos flexibles o menos restrictivos, en el sentido de que pueden producir sólo una gama relativamente pequeña de formas para estimar \(f\), otros métodos como el <em>thin plate splines</em> son mucho más flexibles porque pueden generar una gama mucho más amplia de formas posibles para estimar \(f\). </p>
 
 <p><center><img src="assets/img/img7.png" alt=""></center></p>
 
@@ -455,8 +455,732 @@ usando una ecuación lineal, o es la relación más complicada?</li>
 </slide>
 
 <slide class="" id="slide-24" style="background:;">
+  <hgroup>
+    <h2>Componentes de un predictor</h2>
+  </hgroup>
   <article data-timings="">
-    
+    <p><br></p>
+
+<p><center> pregunta -&gt; data de entrada -&gt; características -&gt;</center></p>
+
+<p><center> algoritmos -&gt; parámetros -&gt; evaluación </center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-25" style="background:;">
+  <hgroup>
+    <h2>Ejemplo SPAM</h2>
+  </hgroup>
+  <article data-timings="">
+    <p></br></p>
+
+<p><center> <code>pregunta</code> -&gt; data de entrada -&gt; características -&gt;</center></p>
+
+<p><center> algoritmos -&gt; parámetros -&gt; evaluación </center></p>
+
+<p></br></p>
+
+<p><strong>Comienza con una pregunta muy general</strong></p>
+
+<p>Puedo detectar automáticamente los emails que son SPAM de los que no ?</p>
+
+<p><strong>Más especifica</strong></p>
+
+<p>Puedo utilizar características cuantitativas para clasificar los emails como SPAM/HAM</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-26" style="background:;">
+  <hgroup>
+    <h2>Ejemplo SPAM</h2>
+  </hgroup>
+  <article data-timings="">
+    <p></br></p>
+
+<p><center> pregunta -&gt; <code>data de entrada</code> -&gt; características -&gt;</center></p>
+
+<p><center> algoritmos -&gt; parámetros -&gt; evaluación </center></p>
+
+<p></br></p>
+
+<p>Véase <code>help(spam)</code> en el paquete <code>kernlab</code></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-27" style="background:;">
+  <hgroup>
+    <h2>Ejemplo SPAM</h2>
+  </hgroup>
+  <article data-timings="">
+    <p></br></p>
+
+<p><center> pregunta -&gt; data de entrada -&gt; <code>características</code> -&gt;</center></p>
+
+<p><center> algoritmos -&gt; parámetros -&gt; evaluación </center></p>
+
+<p></br></p>
+
+<p><b>
+Dear Jeff, </p>
+
+<p>Can you send me your address so I can send you the invitation? </p>
+
+<p>Thanks,</p>
+
+<p>Ben
+</b></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-28" style="background:;">
+  <hgroup>
+    <h2>Ejemplo SPAM</h2>
+  </hgroup>
+  <article data-timings="">
+    <p></br></p>
+
+<p><center> pregunta -&gt; data de entrada -&gt; <code>características</code> -&gt;</center></p>
+
+<p><center> algoritmos -&gt; parámetros -&gt; evaluación </center>
+</br></p>
+
+<p><b> </p>
+
+<p>Dear Jeff, </p>
+
+<p>Can <rt>you</rt> send me your address so I can send <rt>you</rt> the invitation? </p>
+
+<p>Thanks,</p>
+
+<p>Ben
+</b></p>
+
+<p></br></p>
+
+<p>Frecuencia de <code>you</code> \(= 2/17 = 0.118\)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-29" style="background:;">
+  <hgroup>
+    <h2>Ejemplo SPAM</h2>
+  </hgroup>
+  <article data-timings="">
+    <p></br></p>
+
+<p><center> pregunta -&gt; data de entrada -&gt; <code>características</code> -&gt;</center></p>
+
+<p><center> algoritmos -&gt; parámetros -&gt; evaluación </center>
+</br></p>
+
+<pre><code class="r">suppressMessages(suppressWarnings(library(kernlab))) 
+data(spam)
+head(spam, 3)[, 1:11]
+</code></pre>
+
+<pre><code>##   make address  all num3d  our over remove internet order mail receive
+## 1 0.00    0.64 0.64     0 0.32 0.00   0.00     0.00  0.00 0.00    0.00
+## 2 0.21    0.28 0.50     0 0.14 0.28   0.21     0.07  0.00 0.94    0.21
+## 3 0.06    0.00 0.71     0 1.23 0.19   0.19     0.12  0.64 0.25    0.38
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-30" style="background:;">
+  <hgroup>
+    <h2>Ejemplo SPAM</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center> pregunta -&gt; data de entrada -&gt; características -&gt;</center></p>
+
+<p><center> <code>algoritmos</code> -&gt; parámetros -&gt; evaluación </center></p>
+
+<pre><code class="r">plot(density(spam$your[spam$type == &quot;nonspam&quot;]),
+     col = &quot;blue&quot;, main = &quot;&quot;, xlab = &quot;Frecuencia de &#39;your&#39;&quot;, 
+     frame.plot = F)
+lines(density(spam$your[spam$type == &quot;spam&quot;]), col = &quot;red&quot;)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-2-1.png" title="plot of chunk unnamed-chunk-2" alt="plot of chunk unnamed-chunk-2" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-31" style="background:;">
+  <hgroup>
+    <h2>Ejemplo SPAM</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center> pregunta -&gt; data de entrada -&gt; características -&gt;</center></p>
+
+<p><center> <code>algoritmos</code> -&gt; parámetros -&gt; evaluación </center></p>
+
+<p></br></br></p>
+
+<p><strong>Nuestro algoritmo</strong></p>
+
+<ul>
+<li>Encuentre un valor \(C\). </li>
+<li><strong>frecuencia de &#39;your&#39; \(>\) C</strong> prediga &quot;spam&quot;</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-32" style="background:;">
+  <hgroup>
+    <h2>Ejemplo SPAM</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">plot(density(spam$your[spam$type == &quot;nonspam&quot;]),
+     col = &quot;blue&quot;, main = &quot;&quot;, xlab = &quot;Frecuencia de &#39;your&#39;&quot;, 
+     frame.plot = F)
+lines(density(spam$your[spam$type == &quot;spam&quot;]), col = &quot;red&quot;)
+abline(v = 0.5,col = &quot;black&quot;)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-3-1.png" title="plot of chunk unnamed-chunk-3" alt="plot of chunk unnamed-chunk-3" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-33" style="background:;">
+  <hgroup>
+    <h2>Ejemplo SPAM</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center> pregunta -&gt; data de entrada -&gt; características -&gt;</center></p>
+
+<p><center>algoritmos-&gt; parámetros -&gt; <code>evaluación</code> </center></p>
+
+<pre><code class="r">prediction &lt;- ifelse(spam$your &gt; 0.5, &quot;spam&quot;, &quot;nonspam&quot;)
+table(prediction,spam$type)/length(spam$type)
+</code></pre>
+
+<pre><code>##           
+## prediction   nonspam      spam
+##    nonspam 0.4590306 0.1017170
+##    spam    0.1469246 0.2923278
+</code></pre>
+
+<p></br>
+<center>
+Precisión $ \approx 0.459 + 0.292 = 0.751$
+</center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-34" style="background:;">
+  <hgroup>
+    <h2>Orden de la importancia relativa</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center> pregunta -&gt; data de entrada -&gt; características -&gt; algoritmos <center/></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-35" style="background:;">
+  <hgroup>
+    <h2>Basura entra = Basura sale</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center> pregunta -&gt; <code>data de entrada</code> -&gt; características -&gt;</center></p>
+
+<p><center> algoritmos -&gt; parámetros -&gt; evaluación </center></p>
+
+<ol>
+<li>Puede ser fácil (movie películas -&gt; nuevos ratings)</li>
+<li>Puede ser difícil (data de genomas -&gt; enfermedades)</li>
+<li>Si se puede (más data -&gt; mejores modelos)</li>
+<li>Es el paso más importante ¡</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-36" style="background:;">
+  <hgroup>
+    <h2>Características</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center> pregunta -&gt; data de entrada -&gt; <code>características</code> -&gt;</center></p>
+
+<p><center> algoritmos -&gt; parámetros -&gt; evaluación </center></p>
+
+<p><strong>Propiedades de las buenas características</strong></p>
+
+<ul>
+<li>llevar a la comprensión de los datos </li>
+<li>conservar la información relevante</li>
+<li>son creadas con base a el conocimiento experto</li>
+</ul>
+
+<p><strong>Errores comunes</strong></p>
+
+<ul>
+<li>Tratar de automatizar la selección de características </li>
+<li>No prestar atención a las particularidades de los datos </li>
+<li>Despreciar información innecesariamente </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-37" style="background:;">
+  <hgroup>
+    <h2>Temas a considerar</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/img8.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-38" style="background:;">
+  <hgroup>
+    <h2>Compensación en predicción</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Interpretabilidad vs Precisión </p></li>
+<li><p>Velocidad vs Precisión </p></li>
+<li><p>Simplicidad vs Precisión </p></li>
+<li><p>Escalabilidad vs Precisión</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-39" style="background:;">
+  <hgroup>
+    <h2>Error dentro vs Error fuera de la muestra</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><em><strong>In Sample Error</strong></em>: Es la tasa de error que se obtiene en el mismo conjunto de datos que utilizó para construir su predictor. A veces llamado error de resubstitución.</p>
+
+<p><em><strong>Out of Sample Error</strong></em>: La tasa de error que obtiene en un nuevo conjunto de datos. A veces llamado error de generalización.</p>
+
+<p><em><strong>Ideas principales</strong></em></p>
+
+<ul>
+<li><p><em><strong>Out of Sample Error</strong></em> es lo que nos preocupa </p></li>
+<li><p>El <em><strong>In Sample Error</strong></em> \(<\) <em><strong>Out of Sample Error</strong></em></p></li>
+<li><p>La razón principal es el sobre ajuste </p>
+
+<ul>
+<li>Acomodar su algoritmo con los datos que tiene</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-40" style="background:;">
+  <hgroup>
+    <h2>Error dentro vs Error fuera de la muestra</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">suppressMessages(suppressWarnings(library(kernlab)))
+data(spam); set.seed(333)
+smallSpam &lt;- spam[sample(dim(spam)[1],size = 10),]
+spamLabel &lt;- (smallSpam$type == &quot;spam&quot;)*1 + 1
+plot(smallSpam$capitalAve,col = spamLabel, frame.plot = FALSE, pch = 19)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-5-1.png" title="plot of chunk unnamed-chunk-5" alt="plot of chunk unnamed-chunk-5" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-41" style="background:;">
+  <hgroup>
+    <h2>Regla de predicción 1</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>capitalAve \(>\) 2.7 = &quot;spam&quot;</li>
+<li>capitalAve \(<\) 2.40 = &quot;nonspam&quot;</li>
+<li>capitalAve entre 2.40 y 2.45 = &quot;spam&quot;</li>
+<li>capitalAve entre 2.45 y 2.7 = &quot;nonspam&quot;</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-42" style="background:;">
+  <hgroup>
+    <h2>Aplicando la regla 1 a <code>smallSpam</code></h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">rule1 &lt;- function(x){
+  prediction &lt;- rep(NA,length(x))
+  prediction[x &gt; 2.7] &lt;- &quot;spam&quot;
+  prediction[x &lt; 2.40] &lt;- &quot;nonspam&quot;
+  prediction[(x &gt;= 2.40 &amp; x &lt;= 2.45)] &lt;- &quot;spam&quot;
+  prediction[(x &gt; 2.45 &amp; x &lt;= 2.70)] &lt;- &quot;nonspam&quot;
+  return(prediction)
+}
+table(rule1(smallSpam$capitalAve),smallSpam$type)
+</code></pre>
+
+<pre><code>##          
+##           nonspam spam
+##   nonspam       5    0
+##   spam          0    5
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-43" style="background:;">
+  <hgroup>
+    <h2>Regla de predicción 2</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>capitalAve \(>\) 2.40 = &quot;spam&quot;</li>
+<li>capitalAve \(\leq\) 2.40 = &quot;nonspam&quot;</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-44" style="background:;">
+  <hgroup>
+    <h2>Apliclando la Regla 2 a <code>smallSpam</code></h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">rule2 &lt;- function(x){
+  prediction &lt;- rep(NA,length(x))
+  prediction[x &gt; 2.8] &lt;- &quot;spam&quot;
+  prediction[x &lt;= 2.8] &lt;- &quot;nonspam&quot;
+  return(prediction)
+}
+table(rule2(smallSpam$capitalAve),smallSpam$type)
+</code></pre>
+
+<pre><code>##          
+##           nonspam spam
+##   nonspam       5    1
+##   spam          0    4
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-45" style="background:;">
+  <hgroup>
+    <h2>Aplicando a la data completa <code>spam</code></h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">table(rule1(spam$capitalAve), spam$type)
+</code></pre>
+
+<pre><code>##          
+##           nonspam spam
+##   nonspam    2141  588
+##   spam        647 1225
+</code></pre>
+
+<pre><code class="r">table(rule2(spam$capitalAve), spam$type)
+</code></pre>
+
+<pre><code>##          
+##           nonspam spam
+##   nonspam    2224  642
+##   spam        564 1171
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-46" style="background:;">
+  <hgroup>
+    <h2>Aplicando a la data completa <code>spam</code></h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">mean(rule1(spam$capitalAve) == spam$type)
+</code></pre>
+
+<pre><code>## [1] 0.7315801
+</code></pre>
+
+<pre><code class="r">mean(rule2(spam$capitalAve) == spam$type)
+</code></pre>
+
+<pre><code>## [1] 0.7378831
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-47" style="background:;">
+  <hgroup>
+    <h2>La precisión</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">sum(rule1(spam$capitalAve) == spam$type)
+</code></pre>
+
+<pre><code>## [1] 3366
+</code></pre>
+
+<pre><code class="r">sum(rule2(spam$capitalAve) == spam$type)
+</code></pre>
+
+<pre><code>## [1] 3395
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-48" style="background:;">
+  <hgroup>
+    <h2>Que sucede?</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><code>Sobre ajuste</code></center></p>
+
+<ul>
+<li>La data tiene dos partes 
+
+<ul>
+<li>Patrones </li>
+<li>Ruido</li>
+</ul></li>
+<li>La meta de una predicción es encontrar patrones </li>
+<li>Siempre se puede diseñar un predictor perfecto en la muestra</li>
+<li>Se capturan ambas patrones y ruidos cuando haces eso<br></li>
+<li>El predictor no funcionará tan bien en nuevas muestras</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-49" style="background:;">
+  <hgroup>
+    <h2>Diseño de un estudio de predicción</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>Defina su tasa de error </li>
+<li>Divida la data en:
+
+<ul>
+<li>Preparación, Prueba, Validación (opcional)</li>
+</ul></li>
+<li>En la data de preparación escoja las características (variables) 
+
+<ul>
+<li>Utilice <code>cross-validation</code></li>
+</ul></li>
+<li>En la data de preparación se escoja la función
+
+<ul>
+<li>Utilice <code>cross-validation</code></li>
+</ul></li>
+<li>Si no se hace validación 
+
+<ul>
+<li>Aplique 1x (Una vez) al conjunto de prueba</li>
+</ul></li>
+<li>Si se hace validación
+
+<ul>
+<li>Aplique al conjunto de prueba y refine </li>
+<li>Aplique 1x (Una vez) al conjunto de validación </li>
+</ul></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-50" style="background:;">
+  <hgroup>
+    <h2>Diseño de un estudio de predicción</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/img9.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-51" style="background:;">
+  <hgroup>
+    <h2>Reglas básicas para el diseño</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Si tiene un tamaño de muestra grande
+
+<ul>
+<li>60% Preparación</li>
+<li>20% Prueba</li>
+<li>20% Validación</li>
+</ul></li>
+<li>Si tiene un tamaño de muestra medio 
+
+<ul>
+<li>60% Preparación</li>
+<li>40% Prueba</li>
+</ul></li>
+<li>Si tiene un tamaño de muestra pequeño
+
+<ul>
+<li>Haga <code>cross validation</code></li>
+<li>Reporte la advertencia de tamaño de muestra pequeño </li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-52" style="background:;">
+  <hgroup>
+    <h2>Terminos básicos</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>En general, <strong>Positivo</strong> = identificados y <strong>negativo</strong> = rechazado. Por lo tanto:</p>
+
+<p><strong>Verdadero positivo</strong> = identificado correctamente </p>
+
+<p><strong>Falso positivo</strong> = identificado incorrectamente </p>
+
+<p><strong>Verdadero negativo</strong> = rechazado correctamente </p>
+
+<p><strong>Falso negativo</strong> = rechazado incorrectamente </p>
+
+<p><em>Ejemplo de un test Medico</em>:</p>
+
+<p><strong>Verdadero positivo</strong> = Personas enfermas correctamente diagnosticadas como enfermas</p>
+
+<p><strong>Falso positivo</strong>= Personas sanas identificadas incorrectamente como enfermas</p>
+
+<p><strong>Verdadero negativo</strong> = Gente sana correctamente identificada como saludable</p>
+
+<p><strong>Falso negativo</strong> = Personas enfermas identificadas incorrectamente como saludables.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-53" style="background:;">
+  <hgroup>
+    <h2>Cantidades clave</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/img10.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-54" style="background:;">
+  <hgroup>
+    <h2>Cantidades clave como fracciones</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/img11.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-55" style="background:;">
+  <hgroup>
+    <h2>Para datos continuos</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><strong>Error cuadrático medio</strong></li>
+</ul>
+
+<p>\[\frac{1}{n}\sum_{i=1}^n (prediccion_i-verdadero_i)^2\]</p>
+
+<ul>
+<li><strong>Raíz error cuadrático medio</strong></li>
+</ul>
+
+<p>\[\sqrt{\frac{1}{n}\sum_{i=1}^n (prediccion_i-verdadero_i)^2}\]</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-56" style="background:;">
+  <hgroup>
+    <h2>Medidas comunes de error</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>Error cuadrático medio
+
+<ul>
+<li>Datos continuos, sensible a los <code>outliers</code></li>
+</ul></li>
+<li>Desviación media absoluta 
+
+<ul>
+<li>Datos continuos, A menudo más robusta</li>
+</ul></li>
+<li>Sensibilidad <em>Sensitivity</em> 
+
+<ul>
+<li>Si desea perder algunos positivos</li>
+</ul></li>
+<li>Especificidad <em>Specificity</em>
+
+<ul>
+<li>Si quieres algunos negativos llamados positivos</li>
+</ul></li>
+<li>Precisión <em>Accuracy</em>
+
+<ul>
+<li>Pondera falsos positivos/negativos igualmente</li>
+</ul></li>
+<li>Concordancia <em>Concordance</em>
+
+<ul>
+<li>Un ejemplo en <a href="http://en.wikipedia.org/wiki/Cohen%27s_kappa">kappa</a></li>
+</ul></li>
+</ol>
+
   </article>
   <!-- Presenter Notes -->
 </slide>
@@ -605,8 +1329,200 @@ usando una ecuación lineal, o es la relación más complicada?</li>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=24 title='NA'>
+        data-slide=24 title='Componentes de un predictor'>
          24
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=25 title='Ejemplo SPAM'>
+         25
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=26 title='Ejemplo SPAM'>
+         26
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=27 title='Ejemplo SPAM'>
+         27
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=28 title='Ejemplo SPAM'>
+         28
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=29 title='Ejemplo SPAM'>
+         29
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=30 title='Ejemplo SPAM'>
+         30
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=31 title='Ejemplo SPAM'>
+         31
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=32 title='Ejemplo SPAM'>
+         32
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=33 title='Ejemplo SPAM'>
+         33
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=34 title='Orden de la importancia relativa'>
+         34
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=35 title='Basura entra = Basura sale'>
+         35
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=36 title='Características'>
+         36
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=37 title='Temas a considerar'>
+         37
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=38 title='Compensación en predicción'>
+         38
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=39 title='Error dentro vs Error fuera de la muestra'>
+         39
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=40 title='Error dentro vs Error fuera de la muestra'>
+         40
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=41 title='Regla de predicción 1'>
+         41
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=42 title='Aplicando la regla 1 a <code>smallSpam</code>'>
+         42
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=43 title='Regla de predicción 2'>
+         43
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=44 title='Apliclando la Regla 2 a <code>smallSpam</code>'>
+         44
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=45 title='Aplicando a la data completa <code>spam</code>'>
+         45
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=46 title='Aplicando a la data completa <code>spam</code>'>
+         46
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=47 title='La precisión'>
+         47
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=48 title='Que sucede?'>
+         48
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=49 title='Diseño de un estudio de predicción'>
+         49
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=50 title='Diseño de un estudio de predicción'>
+         50
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=51 title='Reglas básicas para el diseño'>
+         51
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=52 title='Terminos básicos'>
+         52
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=53 title='Cantidades clave'>
+         53
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=54 title='Cantidades clave como fracciones'>
+         54
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=55 title='Para datos continuos'>
+         55
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=56 title='Medidas comunes de error'>
+         56
       </a>
     </li>
   </ul>
