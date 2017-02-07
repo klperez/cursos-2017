@@ -1152,7 +1152,7 @@ table(rule2(smallSpam$capitalAve),smallSpam$type)
 <li>Error cuadrático medio
 
 <ul>
-<li>Datos continuos, sensible a los <code>outliers</code></li>
+<li>Datos continuos, sensible a los `outliers</li>
 </ul></li>
 <li>Desviación media absoluta 
 
@@ -1181,6 +1181,191 @@ table(rule2(smallSpam$capitalAve),smallSpam$type)
 </ul></li>
 </ol>
 
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-57" style="background:;">
+  <hgroup>
+    <h2>Métodos de remuestreo</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li><p>Los métodos de remuestreo son una herramienta indispensable en la estadística moderna. Ellos implican extraer repetidamente muestras de un conjunto de entrenamiento y volver a ajustar un modelo de interés en cada muestra con el fin de obtener información adicional sobre el modelo ajustado</p></li>
+<li><p>Los enfoques de re-muestreo pueden ser computacionalmente caros, ya que implican ajustar el mismo método estadístico varias veces utilizando diferentes subconjuntos de los datos de entrenamiento. Sin embargo, debido a los recientes avances en el poder de cálculo, los requisitos computacionales de los métodos de remuestreo generalmente no son prohibitivos.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-58" style="background:;">
+  <hgroup>
+    <h2>Validación Cruzada - <em>(Cross Validation)</em></h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/img9.png" alt=""></center></p>
+
+<p><a href="http://www2.research.att.com/%7Evolinsky/papers/ASAStatComp.pdf">http://www2.research.att.com/~volinsky/papers/ASAStatComp.pdf</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-59" style="background:;">
+  <hgroup>
+    <h2>Validación Cruzada - <em>(Cross Validation)</em></h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>La precisión en los datos de preparación es optimista </p></li>
+<li><p>Estimaciones mas confiables provienen de conjuntos de datos independientes </p></li>
+<li><p>Pero no podemos usar el conjunto de pruebas al construir el modelo o se convierte en parte del conjunto de entrenamiento.</p></li>
+<li><p>Por lo tanto, estimamos la precisión del conjunto de pruebas con el conjunto de entrenamiento.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-60" style="background:;">
+  <hgroup>
+    <h2>Validación Cruzada - <em>(Cross Validation)</em></h2>
+  </hgroup>
+  <article data-timings="">
+    <p><em><strong>Propuesta:</strong></em></p>
+
+<ul>
+<li>Utilizar el conjunto de datos de entrenamiento </li>
+<li>Dividalo en <em>entrenamiento/prueba</em> </li>
+<li>Construya el modelo en la data de <em>entrenamiento</em></li>
+<li>Evalué el modelo en la data de <em>prueba</em></li>
+<li>Repita y promedie los errores estimados </li>
+</ul>
+
+<p><em><strong>Se utiliza:</strong></em></p>
+
+<ul>
+<li>Escoger las variables a incluir en el modelo </li>
+<li>Escoger el tipo de función de predicción a utilizar </li>
+<li>Escoger los parámetros en la función de predicción </li>
+<li>Comparar diferentes predictores</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-61" style="background:;">
+  <hgroup>
+    <h2>Conjunto de validación</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Supongamos que nos gustaría estimar el error de prueba asociado con el ajuste de un método de aprendizaje estadístico particular en un conjunto de observaciones. El enfoque de <em>Conjunto de validación</em> </p>
+
+<p>La tasa de error de conjunto de validación resultante, normalmente se evalúa utilizando \(ECM\) en el caso de una respuesta cuantitativa proporciona una estimación de la tasa de error de prueba.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-62" style="background:;">
+  <hgroup>
+    <h2>Conjunto de validación</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>El enfoque del conjunto de validaciones es conceptualmente simple y fácil de implementar. Pero tiene dos inconvenientes potenciales:</p>
+
+<ol>
+<li><p>La estimación de validación de la tasa de error de prueba puede ser muy variable, dependiendo de qué observaciones se incluyen en el conjunto de entrenamiento y qué observaciones se incluyen en el conjunto de validación.</p></li>
+<li><p>En el enfoque de validación, sólo un subconjunto de las observaciones que se incluyen en el conjunto de entrenamiento en lugar de en el conjunto de validación se utilizan para adaptarse al modelo. Dado que los métodos estadísticos tienden a rendir peor cuando se entrenan en menos observaciones, esto sugiere que la tasa de error de validación establecido puede tender a sobrestimar la tasa de error de prueba para el ajuste del modelo en todo el conjunto de datos.</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-63" style="background:;">
+  <hgroup>
+    <h2><em>Leave-One-Out Cross-Validation</em></h2>
+  </hgroup>
+  <article data-timings="">
+    <p><em>Leave-one-out cross-validation (LOOCV)</em> está muy relacionada con el el enfoque de conjunto de validación, como en este caso el proceso involucra dividir el conjunto de observaciones en dos partes, Sin embargo, en lugar de crear dos subconjuntos de tamaño comparable, una sola observación \((x_1, y_1)\) Se utiliza para el conjunto de validación, y las restantes observaciones \(\{(x_2, y_2) , \ldots, (x_n, y_n)\}\) componen el conjunto de entrenamiento.</p>
+
+<p>La estimación <em>LOOCV</em> para la el conjunto de prueba  es el promedio de \(ECM\) de estas <em>n</em> estimaciones:</p>
+
+<p>\[CV_{(n)}=\frac{1}{n}\sum_{i=1}^nECM_{i}\]</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-64" style="background:;">
+  <hgroup>
+    <h2><em>Leave-One-Out Cross-Validation</em></h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/img12.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-65" style="background:;">
+  <hgroup>
+    <h2><em>k-Fold Cross-Validation</em></h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Una alternativa al <em>LOOCV</em> es <em>k-fold CV</em>, este enfoque involucra dividir aleatoriamente el conjunto de observaciones en <em>k</em> grupos o <em>folds</em>, de aproximadamente el mismo tamaño. El primer <em>folds</em> se trata como un conjunto de prueba, y el modelo se ajusta en los restantes \(k-1\) <em>folds</em>.</p>
+
+<p>La estimación del <em>k-fold CV</em>  se calcula promediando estos valores,</p>
+
+<p>\[CV_{(k)}=\frac{1}{k}\sum_{i=1}^kECM_{i}\]</p>
+
+<p>No es difícil observar que <em>LOOCV</em> es un caso especial de <em>k-fold CV</em> en el que \(k\) se fija a igual \(n\).</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-66" style="background:;">
+  <hgroup>
+    <h2><em>Bootstrap</em></h2>
+  </hgroup>
+  <article data-timings="">
+    <p>El <em>bootstrap</em> es una herramienta estadística ampliamente aplicable y extremadamente poderosa que se puede utilizar para cuantificar la incertidumbre asociada con un estimador dado o método de aprendizaje estadístico. Con este enfoque seleccionamos aleatoriamente \(n\) observaciones del conjunto de datos para producir un conjunto de datos bootstrap \(Z^{*1}\) para producir nuevas estimaciones para un \(\alpha\) que llamaremos \(\hat{\alpha}^{*1}\),(el muestreo se realiza con reemplazo).</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-67" style="background:;">
+  <hgroup>
+    <h2><em>Bootstrap</em></h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Este procedimiento se repite \(B\) veces para algún valor grande \(B\), con el fin de producir \(B\) diferentes conjuntos de datos de arranque \(Z^{*1}, Z^{*2}, \ldots, Z^{*B}\) y las \(B\) correspondientes \(\alpha\) estimaciones \(\hat{\alpha}^{*1}, \hat{\alpha}^{*2}, \ldots, \hat{\alpha}^{*B}\) Podemos calcular el error estándar de estas estimaciones de bootstrap usando la fórmula</p>
+
+<p>\[SE_{B(\hat{\alpha})}=\sqrt{\frac{1}{B-1}\sum_{r=1}^B\left(\hat{\alpha}^{*r}-\frac{1}{B} \sum_{r'=1}^B \hat{\alpha}^{*r'}\right)}\] </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-68" style="background:;">
+  <hgroup>
+    <h2><em>Bootstrap</em></h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/img13.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-69" style="background:;">
+  <article data-timings="">
+    
   </article>
   <!-- Presenter Notes -->
 </slide>
@@ -1523,6 +1708,84 @@ table(rule2(smallSpam$capitalAve),smallSpam$type)
       <a href="#" target="_self" rel='tooltip' 
         data-slide=56 title='Medidas comunes de error'>
          56
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=57 title='Métodos de remuestreo'>
+         57
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=58 title='Validación Cruzada - <em>(Cross Validation)</em>'>
+         58
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=59 title='Validación Cruzada - <em>(Cross Validation)</em>'>
+         59
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=60 title='Validación Cruzada - <em>(Cross Validation)</em>'>
+         60
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=61 title='Conjunto de validación'>
+         61
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=62 title='Conjunto de validación'>
+         62
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=63 title='<em>Leave-One-Out Cross-Validation</em>'>
+         63
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=64 title='<em>Leave-One-Out Cross-Validation</em>'>
+         64
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=65 title='<em>k-Fold Cross-Validation</em>'>
+         65
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=66 title='<em>Bootstrap</em>'>
+         66
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=67 title='<em>Bootstrap</em>'>
+         67
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=68 title='<em>Bootstrap</em>'>
+         68
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=69 title='NA'>
+         69
       </a>
     </li>
   </ul>

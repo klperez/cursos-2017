@@ -728,7 +728,7 @@ $$\sqrt{\frac{1}{n}\sum_{i=1}^n (prediccion_i-verdadero_i)^2}$$
 ## Medidas comunes de error
 
 1. Error cuadrático medio
-  * Datos continuos, sensible a los `outliers`
+  * Datos continuos, sensible a los `outliers
 2. Desviación media absoluta 
   * Datos continuos, A menudo más robusta
 3. Sensibilidad _Sensitivity_ 
@@ -739,5 +739,127 @@ $$\sqrt{\frac{1}{n}\sum_{i=1}^n (prediccion_i-verdadero_i)^2}$$
   * Pondera falsos positivos/negativos igualmente
 6. Concordancia _Concordance_
   * Un ejemplo en [kappa](http://en.wikipedia.org/wiki/Cohen%27s_kappa)
+
+
+---
+
+## Métodos de remuestreo 
+
+> - Los métodos de remuestreo son una herramienta indispensable en la estadística moderna. Ellos implican extraer repetidamente muestras de un conjunto de entrenamiento y volver a ajustar un modelo de interés en cada muestra con el fin de obtener información adicional sobre el modelo ajustado
+
+
+> - Los enfoques de re-muestreo pueden ser computacionalmente caros, ya que implican ajustar el mismo método estadístico varias veces utilizando diferentes subconjuntos de los datos de entrenamiento. Sin embargo, debido a los recientes avances en el poder de cálculo, los requisitos computacionales de los métodos de remuestreo generalmente no son prohibitivos.
+
+---
+
+
+
+## Validación Cruzada - _(Cross Validation)_
+
+<center>![](assets/img/img9.png)</center>
+
+[http://www2.research.att.com/~volinsky/papers/ASAStatComp.pdf](http://www2.research.att.com/~volinsky/papers/ASAStatComp.pdf)
+
+---
+
+## Validación Cruzada - _(Cross Validation)_
+
+- La precisión en los datos de preparación es optimista 
+
+- Estimaciones mas confiables provienen de conjuntos de datos independientes 
+
+- Pero no podemos usar el conjunto de pruebas al construir el modelo o se convierte en parte del conjunto de entrenamiento.
+
+- Por lo tanto, estimamos la precisión del conjunto de pruebas con el conjunto de entrenamiento.
+
+---
+
+## Validación Cruzada - _(Cross Validation)_
+
+_**Propuesta:**_
+
+- Utilizar el conjunto de datos de entrenamiento 
+- Dividalo en _entrenamiento/prueba_ 
+- Construya el modelo en la data de _entrenamiento_
+- Evalué el modelo en la data de _prueba_
+- Repita y promedie los errores estimados 
+
+_**Se utiliza:**_
+
+- Escoger las variables a incluir en el modelo 
+- Escoger el tipo de función de predicción a utilizar 
+- Escoger los parámetros en la función de predicción 
+- Comparar diferentes predictores
+
+---
+
+## Conjunto de validación
+
+Supongamos que nos gustaría estimar el error de prueba asociado con el ajuste de un método de aprendizaje estadístico particular en un conjunto de observaciones. El enfoque de _Conjunto de validación_ 
+
+La tasa de error de conjunto de validación resultante, normalmente se evalúa utilizando $ECM$ en el caso de una respuesta cuantitativa proporciona una estimación de la tasa de error de prueba.
+
+---
+
+## Conjunto de validación
+
+El enfoque del conjunto de validaciones es conceptualmente simple y fácil de implementar. Pero tiene dos inconvenientes potenciales:
+
+1. La estimación de validación de la tasa de error de prueba puede ser muy variable, dependiendo de qué observaciones se incluyen en el conjunto de entrenamiento y qué observaciones se incluyen en el conjunto de validación.
+
+2. En el enfoque de validación, sólo un subconjunto de las observaciones que se incluyen en el conjunto de entrenamiento en lugar de en el conjunto de validación se utilizan para adaptarse al modelo. Dado que los métodos estadísticos tienden a rendir peor cuando se entrenan en menos observaciones, esto sugiere que la tasa de error de validación establecido puede tender a sobrestimar la tasa de error de prueba para el ajuste del modelo en todo el conjunto de datos.
+
+---
+
+## _Leave-One-Out Cross-Validation_
+
+_Leave-one-out cross-validation (LOOCV)_ está muy relacionada con el el enfoque de conjunto de validación, como en este caso el proceso involucra dividir el conjunto de observaciones en dos partes, Sin embargo, en lugar de crear dos subconjuntos de tamaño comparable, una sola observación $(x_1, y_1)$ Se utiliza para el conjunto de validación, y las restantes observaciones $\{(x_2, y_2) , \ldots, (x_n, y_n)\}$ componen el conjunto de entrenamiento.
+
+La estimación _LOOCV_ para la el conjunto de prueba  es el promedio de $ECM$ de estas _n_ estimaciones:
+
+$$CV_{(n)}=\frac{1}{n}\sum_{i=1}^nECM_{i}$$
+
+---
+
+## _Leave-One-Out Cross-Validation_
+
+<center>![](assets/img/img12.png)</center>
+
+---
+
+## _k-Fold Cross-Validation_
+
+Una alternativa al _LOOCV_ es _k-fold CV_, este enfoque involucra dividir aleatoriamente el conjunto de observaciones en _k_ grupos o _folds_, de aproximadamente el mismo tamaño. El primer _folds_ se trata como un conjunto de prueba, y el modelo se ajusta en los restantes $k-1$ _folds_.
+
+La estimación del _k-fold CV_  se calcula promediando estos valores,
+
+$$CV_{(k)}=\frac{1}{k}\sum_{i=1}^kECM_{i}$$
+
+No es difícil observar que _LOOCV_ es un caso especial de _k-fold CV_ en el que $k$ se fija a igual $n$.
+
+---
+
+
+## _Bootstrap_
+
+El _bootstrap_ es una herramienta estadística ampliamente aplicable y extremadamente poderosa que se puede utilizar para cuantificar la incertidumbre asociada con un estimador dado o método de aprendizaje estadístico. Con este enfoque seleccionamos aleatoriamente $n$ observaciones del conjunto de datos para producir un conjunto de datos bootstrap $Z^{*1}$ para producir nuevas estimaciones para un $\alpha$ que llamaremos $\hat{\alpha}^{*1}$,(el muestreo se realiza con reemplazo).
+
+---
+
+## _Bootstrap_
+
+Este procedimiento se repite $B$ veces para algún valor grande $B$, con el fin de producir $B$ diferentes conjuntos de datos de arranque $Z^{*1}, Z^{*2}, \ldots, Z^{*B}$ y las $B$ correspondientes $\alpha$ estimaciones $\hat{\alpha}^{*1}, \hat{\alpha}^{*2}, \ldots, \hat{\alpha}^{*B}$ Podemos calcular el error estándar de estas estimaciones de bootstrap usando la fórmula
+
+$$SE_{B(\hat{\alpha})}=\sqrt{\frac{1}{B-1}\sum_{r=1}^B\left(\hat{\alpha}^{*r}-\frac{1}{B} \sum_{r'=1}^B \hat{\alpha}^{*r'}\right)}$$ 
+
+---
+
+## _Bootstrap_
+
+
+<center>![](assets/img/img13.png)</center>
+
+---
+
 
 
