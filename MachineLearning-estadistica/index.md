@@ -940,5 +940,728 @@ $$SE_{B(\hat{\alpha})}=\sqrt{\frac{1}{B-1}\sum_{r=1}^B\left(\hat{\alpha}^{*r}-\f
 
 ---
 
+## Regresión Lineal 
+
+- Considere el desarrollo probabilistico para un modelo de regresión lineal 
+
+$$
+Y_i = \beta_0 + \beta_1 X_i + \epsilon_{i}
+$$
+
+- Aquí $\epsilon_{i}$ se asume _iid_ $N(0, \sigma^2)$. 
+- Note que, $E[Y_i ~|~ X_i = x_i] = \mu_i = \beta_0 + \beta_1 x_i$
+- Note que, $Var(Y_i ~|~ X_i = x_i) = \sigma^2$.
+
+---
+
+## Verosimilitud 
 
 
+$$L(\beta, \sigma)=\prod_{i=1}^n\{(2\pi\sigma^2)^{-1/2}\exp(-\frac{1}{2\sigma^2}(y_i-\mu_i)^2)\}$$
+Entonces el doble del logaritmo negativo de la verosimilitud 
+
+$$-2\log\{L(\beta, \sigma)\}= \frac{1}{\sigma^2}\sum_{i=1}^n(y_i-\mu_i)^2+n\log(\sigma^2)$$
+El estimador de mínimos cuadrados para $\mu = \beta_0 + \beta_1X_i$ es exactamente el estimador máximo verosimilitud. 
+
+
+---
+
+
+## Regresión Lineal  
+
+- El modelo $Y_i =  \mu_i + \epsilon_i = \beta_0 + \beta_1 X_i + \epsilon_i$ donde $\epsilon_i$ están _iid_ $N(0, \sigma^2)$
+- Los estimadores _MV_ $\beta_0$ y $\beta_1$ son las estimaciones de mínimos cuadrados
+  $$\hat \beta_1 = Cor(Y, X) \frac{Sd(Y)}{Sd(X)} ~~~ \hat \beta_0 = \bar Y - \hat \beta_1 \bar X$$
+- $E[Y ~|~ X = x] = \beta_0 + \beta_1 x$
+- $Var(Y ~|~ X = x) = \sigma^2$
+
+--- 
+
+## Interpretando los coeficientes
+
+- $\beta_0$ es el valor esperado de la respuesta cuando el predictor es 0
+
+$$
+E[Y | X = 0] =  \beta_0 + \beta_1 \times 0 = \beta_0
+$$
+- Tenga en cuenta que esto no siempre es de interés, por ejemplo cuando $X=0$ en mediciones de presión sanguínea o la altura de una persona 
+
+* Considere lo siguiente
+
+$$
+Y_i = \beta_0 + \beta_1 X_i + \epsilon_i
+= \beta_0 + a \beta_1 + \beta_1 (X_i - a) + \epsilon_i
+= \tilde \beta_0 + \beta_1 (X_i - a) + \epsilon_i
+$$
+
+Entonces, cambiando los valores $X$ por valores $a$ cambia el intercepto, pero no la pendiente. 
+
+- A menudo $a$ se establece como $\bar X$ de modo que el intercepto se interpreta como la respuesta esperada en la media de los valores $X$.
+
+---
+
+## Interpretando los coeficientes
+
+- $\beta_1$ es el cambio esperado en la respuesta para un cambio de 1 unidad en el predictor
+$$
+E[Y ~|~ X = x+1] - E[Y ~|~ X = x] =
+\beta_0 + \beta_1 (x + 1) - (\beta_0 + \beta_1 x ) = \beta_1
+$$
+- Considere el impacto de cambiar las unidades de $X$.
+
+$$
+Y_i = \beta_0 + \beta_1 X_i + \epsilon_i
+= \beta_0 + \frac{\beta_1}{a} (X_i a) + \epsilon_i
+= \beta_0 + \tilde \beta_1 (X_i a) + \epsilon_i
+$$
+- Por lo tanto, la multiplicación de $X$ por un factor $a$ resulta en dividir el coeficiente por un factor de $a$.
+
+- Ejemplo: $X$ es la altura en $m$ y $Y$ es el peso en $kg$. Entonces $\beta_1$ es $kg/m$. Convertir $X$ a $cm$ implica multiplicar $X$ por $100 cm/m$. Para obtener $\beta_1$ en las unidades correctas, tenemos que dividir por $100cm/m$ para que tenga las unidades correctas.
+
+$$
+X m \times \frac{100cm}{m} = (100 X) cm
+~~\mbox{y}~~
+\beta_1 \frac{kg}{m} \times\frac{1 m}{100cm} = 
+\left(\frac{\beta_1}{100}\right)\frac{kg}{cm}
+$$
+
+---
+
+## Predicción 
+
+- Si queremos predecir el resultado en un valor particular del predictor, digamos $X$, el modelo de regresión predice
+
+$$
+\hat \beta_0 + \hat \beta_1 X
+$$
+- Note que a un valor observado $X$, se le obtienen predicciones 
+$$\hat{\mu}_i=\hat{Y}_i= \hat \beta_0 + \hat \beta_1 X$$
+- Recuerde que los mínimos cuadrados hacen 
+
+$$\sum_{i=1}^n(Y_i-\mu_i)$$
+Para $\mu_i$ expresadas como puntos de una linea 
+
+---
+
+## Ejemplo 
+
+El conjunto de datos `diamond` del paquete `UsingR` nos muestra los precios del diamante (_dólares de Singapur_) y el peso del diamante en quilates (medida estándar de masa de diamante, 0.2 $g$). Para obtener el uso de los datos
+
+---
+
+## Ejemplo
+
+<img src="assets/fig/unnamed-chunk-11-1.png" title="plot of chunk unnamed-chunk-11" alt="plot of chunk unnamed-chunk-11" style="display: block; margin: auto;" />
+
+---
+
+## Ajustando la regresión lineal 
+
+
+```r
+fit <- lm(price ~ carat, data = diamond)
+coef(fit)
+```
+
+```
+## (Intercept)       carat 
+##   -259.6259   3721.0249
+```
+
+- Estimamos un aumento esperado de 3721.02 (SIN) del precio en dolares por cada aumento de quilates en la masa de diamante.
+
+* El intercepto -259.63 es el precio esperado de un diamante de 0 quilates.
+
+---
+
+## $\hat \beta_0$ Interpretable
+
+
+```r
+fit2 <- lm(price ~ I(carat - mean(carat)), data = diamond)
+coef(fit2)
+```
+
+```
+##            (Intercept) I(carat - mean(carat)) 
+##               500.0833              3721.0249
+```
+
+Esto es, $500.1 es el precio esperado para 
+el diamante de tamaño promedio de los datos (0.2041667 carats).
+
+---
+
+## Cambio de escala 
+
+- Un aumento de un quilate en un diamante es bastante, ¿qué pasa con un cambio de unidades de 1/10 de un quilate?
+- Sólo podemos hacer esto dividiendo el coeficiente por 10.
+- Esperamos un aumento 372.102 (SIN) del precio en dolares por cada 1/10th de aumento de quilates en masa de diamante.
+
+
+```r
+fit3 <- lm(price ~ I(carat * 10), data = diamond)
+coef(fit3)
+```
+
+```
+##   (Intercept) I(carat * 10) 
+##     -259.6259      372.1025
+```
+
+---
+
+## Predicciones del precio de un diamante
+
+
+```r
+newx <- c(0.16, 0.27, 0.34)
+coef(fit)[1] + coef(fit)[2] * newx
+```
+
+```
+## [1]  335.7381  745.0508 1005.5225
+```
+
+```r
+predict(fit, newdata = data.frame(carat = newx))
+```
+
+```
+##         1         2         3 
+##  335.7381  745.0508 1005.5225
+```
+
+---
+
+## Regresión multivariada 
+
+- El modelo lineal general extiende la regresión lineal simple mediante la adición de términos de forma lineal en el modelo.
+
+$$
+Y_i =  \beta_1 X_{1i} + \beta_2 X_{2i} + \ldots +
+\beta_{p} X_{pi} + \epsilon_{i} 
+= \sum_{k=1}^p X_{ik} \beta_j + \epsilon_{i}
+$$
+
+
+- Aquí normalmente $X_{1i}=1$, así que el termino para intercepto se incluye.
+- Los mínimos cuadrados (y por lo tanto las estimaciones _MV_ bajo _iid_ Normal de los errores) minimiza
+$$
+\sum_{i=1}^n \left(Y_i - \sum_{k=1}^p X_{ki} \beta_j\right)^2
+$$
+
+* Notese que la linealidad importante, linealidad en los coeficientes. Esto es,
+
+$$
+Y_i =  \beta_1 X_{1i}^2 + \beta_2 X_{2i}^2 + \ldots +
+\beta_{p} X_{pi}^2 + \epsilon_{i} 
+$$
+Sigue siendo un modelo lineal. 
+
+---
+
+## Estimaciones 
+
+- Recordemos que la estimación _MC_ para la regresión a través del origen,
+$E[Y_i]=X_{1i}\beta_1$, era $\sum X_i Y_i / \sum X_i^2$
+
+- Consideremos dos regresores, $E[Y_i] = X_{1i}\beta_1 + X_{2i}\beta_2 = \mu_i$. 
+
+- Mínimos cuadrados trata de minimizar 
+
+$$
+\sum_{i=1}^n (Y_i - X_{1i} \beta_1 - X_{2i} \beta_2)^2
+$$
+
+---
+
+
+## Las ecuaciones 
+
+- Las soluciones de mínimos cuadrados tienen que minimizar
+$$
+\sum_{i=1}^n (Y_i - X_{1i}\beta_1 - \ldots - X_{pi}\beta_p)^2
+$$
+
+- La estimación de mínimos cuadrados para el coeficiente de un modelo de regresión multivariada es exactamente la regresión a través del origen eliminado las relaciones lineales con los otros regresores tanto del regresor como de la salida tomando residuos.
+
+- En este sentido, la regresión multivariada "ajusta" un coeficiente del impacto lineal de las otras variables.
+
+---
+
+
+## Ejemplo
+
+Modelo lineal con dos variable 
+
+
+```r
+n = 100; x = rnorm(n); x2 = rnorm(n); x3 = rnorm(n)
+y = 1 + x + x2 + x3 + rnorm(n, sd = .1)
+ey = resid(lm(y ~ x2 + x3))
+ex = resid(lm(x ~ x2 + x3))
+sum(ey * ex) / sum(ex ^ 2)
+```
+
+```
+## [1] 1.016763
+```
+
+```r
+coef(lm(ey ~ ex - 1))
+```
+
+```
+##       ex 
+## 1.016763
+```
+
+```r
+coef(lm(y ~ x + x2 + x3)) 
+```
+
+```
+## (Intercept)           x          x2          x3 
+##    1.015085    1.016763    1.010533    1.010018
+```
+
+---
+
+
+## Interpretación de los coeficientes 
+
+$$E[Y | X_1 = x_1, \ldots, X_p = x_p] = \sum_{k=1}^p x_{k} \beta_k$$
+
+$$
+E[Y | X_1 = x_1 + 1, \ldots, X_p = x_p] = (x_1 + 1) \beta_1 + \sum_{k=2}^p x_{k} \beta_k
+$$
+
+$$
+E[Y | X_1 = x_1 + 1, \ldots, X_p = x_p]  - E[Y | X_1 = x_1, \ldots, X_p = x_p]
+$$
+
+
+$$= (x_1 + 1) \beta_1 + \sum_{k=2}^p x_{k} \beta_k + \sum_{k=1}^p x_{k} \beta_k = \beta_1 
+$$ De manera que la interpretación de un coeficiente de regresión multivariada, es el cambio esperado en la respuesta por unidad de cambio en el regresor, manteniendo fijos todos los otros regresores.
+
+---
+
+
+
+
+## Valores ajustados, residuos y variación residual
+
+Todos los cálculos de (_RLS_) pueden extenderse a modelos lineales
+
+- Modelo $Y_i = \sum_{k=1}^p X_{ik} \beta_{k} + \epsilon_{i}$ donde $\epsilon_i \sim N(0, \sigma^2)$
+- Respuesta ajustada $\hat Y_i = \sum_{k=1}^p X_{ik} \hat \beta_{k}$
+- Residuales $e_i = Y_i - \hat Y_i$
+- Varianza estimada $\hat \sigma^2 = \frac{1}{n-p} \sum_{i=1}^n e_i ^2$
+- Obtener predicciones en nuevos valores, $x_1, \ldots, x_p$, simplemente,  $\sum_{k=1}^p x_{k} \hat \beta_{k}$
+- Los coeficientes errores estándar, $\hat \sigma_{\hat \beta_k}$, y
+$\frac{\hat \beta_k - \beta_k}{\hat \sigma_{\hat \beta_k}}$
+siguen una distribución $T$ con $n-p$ grados de libertad.
+
+---
+
+## Modelos lineales 
+
+- Son la técnica estadística y de _machine learning_ más aplicada por mucho
+
+- Algunas cosas asombrosas que puedes lograr con modelos lineales
+    
+    - Ajustar flexiblemente funciones complicadas.
+    - Ajustar variables tipo factor como predictoras 
+    - Construir modelos precisos 
+
+---
+
+## Modelos lineales 
+
+- Los modelos lineales son la técnica estadística aplicada más útil. Sin embargo, no vienen sin sus limitaciones.
+
+    - Los modelos de respuesta aditiva no tienen mucho sentido si la respuesta es discreta, o estrictamente positiva.
+    - Los modelos de error aditivo a menudo no tienen sentido, por ejemplo si el resultado tiene que ser positivo.
+    - Las transformaciones son a menudo difíciles de interpretar.
+    - Hay que modelar valores en los datos en la escala que fue recolectada.
+    - Las transformaciones particularmente interpetables, los logaritmos naturales en específico, no son aplicables para valores negativos o cero.
+
+
+---
+
+## Modelos lineales generalizados 
+
+- Introducido en un articulo de RSSB 1972 por Nelder y Wedderburn.
+- Incluyen tres componentes:
+
+    - Un modelo de la *familia exponencial* para la respuesta. 
+    - Un componente sistemático a través de un predictor lineal
+    - Una función de enlace que conecta la media de la respuesta al predictor lineal
+
+
+---
+
+## Ejemplo, Modelos lineales 
+
+- Asuma que $Y_i \sim N(\mu_i, \sigma^2)$ (La distribución Gaussiana es de la familia exponencial.)
+- Define el predictor lineal $\eta_i = \sum_{k=1}^p X_{ik} \beta_k$.
+- La función de enlace es $g$ tal que $g(\mu) = \eta$.
+
+    - Para modelos lineales es $g(\mu) = \mu$ tal que $\mu_i = \eta_i$
+
+- Esto produce el mismo modelo de verosimilitud que nuestro modelo aditivo de error lineal de Gauss
+
+$$Y_i = \sum_{k=1}^p X_{ik} \beta_k + \epsilon_{i}$$
+
+Donde $\epsilon_i \stackrel{iid}{\sim} N(0, \sigma^2)$
+
+---
+
+## Ejemplo, Regresión logistica 
+
+- Asuma que $Y_i \sim Bernoulli(\mu_i)$ tal que $E[Y_i] = \mu_i$ donde $0\leq \mu_i \leq 1$.
+- El predictor lineal $\eta_i = \sum_{k=1}^p X_{ik} \beta_k$
+- Función de enlace $g(\mu) = \eta = \log\left( \frac{\mu}{1 - \mu}\right)$ $g$ el log (natural) de los _odds_, conocidos como los **logit**.
+
+- Note que que podemos invertir la función _*logit*_ como
+
+$$
+\mu_i = \frac{\exp(\eta_i)}{1 + \exp(\eta_i)} ~~~\mbox{y}~~~
+1 - \mu_i = \frac{1}{1 + \exp(\eta_i)}
+$$
+Por lo tanto, la verosimilitud es
+$$
+\prod_{i=1}^n \mu_i^{y_i} (1 - \mu_i)^{1-y_i} = \exp\left(\sum_{i=1}^n y_i \eta_i \right)
+\prod_{i=1}^n (1 + \eta_i)^{-1}
+$$
+
+---
+
+## Ejemplo, Regresión Poisson 
+
+- Asuma  que  $Y_i \sim Poisson(\mu_i)$ tal que $E[Y_i] = \mu_i$ donde $0\leq \mu_i$
+- Predictor lineal $\eta_i = \sum_{k=1}^p X_{ik} \beta_k$
+- Función de enlace $g(\mu) = \eta = \log(\mu)$
+- Recuerde que $e^x$ es la inversa de $\log(x)$ así,  
+$$
+\mu_i = e^{\eta_i}
+$$
+Por lo tanto, la verosimilitud es
+
+$$
+\prod_{i=1}^n (y_i !)^{-1} \mu_i^{y_i}e^{-\mu_i} \propto \exp\left(\sum_{i=1}^n y_i \eta_i - \sum_{i=1}^n \mu_i\right)
+$$
+
+---
+
+## Detalles 
+
+- En cada caso, la única manera en que la verosimilitud depende de los datos es a través de
+
+$$\sum_{i=1}^n y_i \eta_i = \sum_{i=1}^n y_i\sum_{k=1}^p X_{ik} \beta_k = \sum_{k=1}^p \beta_k\sum_{i=1}^n X_{ik} y_i $$
+
+Así, si no necesitamos todos los datos completos, sólo $\sum_{i=1}^n X_{ik} y_i$. 
+
+Esta simplificación es una consecuencia de la elección de las llamadas funciones de enlace "canónicas".
+
+- (Esto tiene que ser derivado). Todos los modelos alcanzan su máximo en la raíz de las llamadas ecuaciones normales
+
+$$ 0=\sum_{i=1}^n \frac{(Y_i - \mu_i)}{Var(Y_i)}W_i $$
+Donde $W_i$ son la derivada de la inversa de la función de enlace.
+
+
+---
+
+
+## Acerca de las varianzas 
+
+
+$$
+0=\sum_{i=1}^n \frac{(Y_i - \mu_i)}{Var(Y_i)}W_i
+$$
+
+- Para el modelo lineal $Var(Y_i) = \sigma^2$ es constante.
+- Para el caso Bernoulli $Var(Y_i) = \mu_i (1 - \mu_i)$
+- Para el caso Poisson $Var(Y_i) = \mu_i$. 
+- En estos últimos casos, a menudo es pertinente tener un modelo de varianza más flexible, incluso si no corresponde a una probabilidad real
+
+$$
+0=\sum_{i=1}^n \frac{(Y_i - \mu_i)}{\phi \mu_i (1 - \mu_i ) } W_i ~~~\mbox{y}~~~
+0=\sum_{i=1}^n \frac{(Y_i - \mu_i)}{\phi \mu_i} W_i
+$$
+- Estas son llamadas ecuaciones normales 'cuasi-verosímiles' 
+
+---
+
+
+## _Odds_ y _ends_
+
+- Las ecuaciones normales tienen que ser resueltas iterativamente, Resultando en $\hat \beta_k$ y, Si está incluido, $\hat \phi$.
+
+- Las respuestas predictoras predictoras lineales pueden obtenerse como $\hat \eta = \sum_{k=1}^p X_k \hat \beta_k$
+- Las respuestas medias predichas como $\hat \mu = g^{-1}(\hat \eta)$
+- Los coeficientes se interpretan como
+$$
+g(E[Y | X_k = x_k + 1, X_{\sim k} = x_{\sim k}]) - g(E[Y | X_k = x_k, X_{\sim k}=x_{\sim k}]) = \beta_k
+$$
+O el cambio en la función de enlace de la respuesta esperada por unidad de cambio en $X_k$ manteniendo constantes otros regresores.
+- Las variaciones en el algoritmo de _Newton/Raphson_ se utilizan para hacer esto.
+- Por lo general para hacer inferencia se utiliza la teoría asintotica
+- Muchas de las ideas de modelos lineales pueden ser vistas como MlGs.
+
+---
+
+## Respuestas Binarias 
+
+- Frecuentemente nos es de interés repuestas con solo dos posibles valores 
+    
+    - Sobrevive/No Sobrevive 
+    - Gana/pierde
+    - Éxito/fracaso
+    - etc.
+
+- Llamadas Binarias, Bernoulli o salidas 0/1
+
+- La colección de resultados binarios intercambiables para los mismos datos de covariables se denomina binomial
+
+--- 
+
+## Ejemplo 
+
+
+```r
+#download.file("https://dl.dropboxusercontent.com/u/7710864/data/ravensData.rda", destfile = "./data/ravensData.rda", method = "curl")
+load("./data/ravensData.rda")
+head(ravensData)
+```
+
+```
+##   ravenWinNum ravenWin ravenScore opponentScore
+## 1           1        W         24             9
+## 2           1        W         38            35
+## 3           1        W         28            13
+## 4           1        W         34            31
+## 5           1        W         44            13
+## 6           0        L         23            24
+```
+
+---
+
+## Regresión Lineal 
+
+$$ RW_i = b_0 + b_1 RS_i + e_i $$
+
+$RW_i$ - 1 Si el equipo gana, 0 si no 
+
+$RS_i$ - Número de puntos marcados
+
+$b_0$ - probabilidad de que el equipo gane si marca 0 puntos
+
+$b_1$ - Incremento en la probabilidad de que el equipo gane por cada punto adicional
+
+$e_i$ - Variación residual debida
+
+---
+
+## Regresión Lineal 
+
+
+```r
+lmRavens <- lm(ravensData$ravenWinNum ~ ravensData$ravenScore)
+summary(lmRavens)$coef
+```
+
+```
+##                         Estimate  Std. Error  t value   Pr(>|t|)
+## (Intercept)           0.28503172 0.256643165 1.110615 0.28135043
+## ravensData$ravenScore 0.01589917 0.009058997 1.755069 0.09625261
+```
+
+---
+
+## Odds
+
+__Salida Binaria 0/1__
+
+$$RW_i$$  
+
+__Probabilidad (0,1)__
+
+$$\rm{Pr}(RW_i | RS_i, b_0, b_1 )$$
+
+
+__Odds $(0,\infty)$__
+
+$$\frac{\rm{Pr}(RW_i | RS_i, b_0, b_1 )}{1-\rm{Pr}(RW_i | RS_i, b_0, b_1)}$$ 
+
+__Log odds $(-\infty,\infty)$__
+
+$$\log\left(\frac{\rm{Pr}(RW_i | RS_i, b_0, b_1 )}{1-\rm{Pr}(RW_i | RS_i, b_0, b_1)}\right)$$ 
+
+---
+
+## Regresión logistica vs. Lineal 
+
+__Lineal__
+
+$$ RW_i = b_0 + b_1 RS_i + e_i $$
+
+o
+
+$$ E[RW_i | RS_i, b_0, b_1] = b_0 + b_1 RS_i$$
+
+__Logistica__
+
+$$ \rm{Pr}(RW_i | RS_i, b_0, b_1) = \frac{\exp(b_0 + b_1 RS_i)}{1 + \exp(b_0 + b_1 RS_i)}$$
+
+o
+
+$$ \log\left(\frac{\rm{Pr}(RW_i | RS_i, b_0, b_1 )}{1-\rm{Pr}(RW_i | RS_i, b_0, b_1)}\right) = b_0 + b_1 RS_i $$
+
+---
+
+## Interpretando la Regresión Logistica 
+
+$$ \log\left(\frac{\rm{Pr}(RW_i | RS_i, b_0, b_1 )}{1-\rm{Pr}(RW_i | RS_i, b_0, b_1)}\right) = b_0 + b_1 RS_i $$
+
+
+$b_0$ - Logaritmo de los odds de una victoria del equipo si anota 0 puntos 
+
+$b_1$ - Logaritmo de los odds probabilidad del proporción de victorias por cada punto anotado (comparado con cero puntos)
+
+$\exp(b_1)$ - Probabilidad de Proporción Odds por cada punto anotado (comparado con cero puntos)
+
+---
+
+## _Odds_
+
+- Imagine que está jugando un juego en el que tirar una moneda con probabilidad de éxito $p$.
+- Si sale "cara"", gana $X$. si sale "sello", pierde $Y$.
+- ¿Como debemos establecer $X$ y $Y$ para que el juego sea justo?
+
+    $$E[ganancias]= X p - Y (1 - p) = 0$$
+- Implica 
+    $$\frac{Y}{X} = \frac{p}{1 - p}$$    
+- Los _*odds*_ pueden decirse como "¿Cuánto debería estar dispuesto a pagar por una probabilidad de $p$ de ganar un dólar?"
+
+    - (If $p > 0.5$ Tiene que pagar más si pierde que lo que consigue si gana)
+    - (If $p < 0.5$ Tiene que pagar más si pierde que lo que consigue si gana)
+
+---
+
+## Regresión logistica 
+
+
+```r
+logRegRavens <- glm(ravensData$ravenWinNum ~ ravensData$ravenScore,
+                    family = "binomial")
+summary(logRegRavens)
+```
+
+```
+## 
+## Call:
+## glm(formula = ravensData$ravenWinNum ~ ravensData$ravenScore, 
+##     family = "binomial")
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.7575  -1.0999   0.5305   0.8060   1.4947  
+## 
+## Coefficients:
+##                       Estimate Std. Error z value Pr(>|z|)
+## (Intercept)           -1.68001    1.55412  -1.081     0.28
+## ravensData$ravenScore  0.10658    0.06674   1.597     0.11
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 24.435  on 19  degrees of freedom
+## Residual deviance: 20.895  on 18  degrees of freedom
+## AIC: 24.895
+## 
+## Number of Fisher Scoring iterations: 5
+```
+
+
+---
+
+## Valores ajustados 
+
+
+```r
+plot(ravensData$ravenScore,
+     logRegRavens$fitted, pch = 19,
+     col = "blue" , xlab = "Score", ylab = "Prob Ravens ganen", frame.plot = F)
+```
+
+<img src="assets/fig/unnamed-chunk-17-1.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" style="display: block; margin: auto;" />
+
+
+---
+
+## _Odds ratios_ e intervalos de confianza
+
+
+```r
+exp(logRegRavens$coeff)
+```
+
+```
+##           (Intercept) ravensData$ravenScore 
+##             0.1863724             1.1124694
+```
+
+```r
+exp(confint(logRegRavens))
+```
+
+```
+## Waiting for profiling to be done...
+```
+
+```
+##                             2.5 %   97.5 %
+## (Intercept)           0.005674966 3.106384
+## ravensData$ravenScore 0.996229662 1.303304
+```
+
+
+---
+
+## ANOVA para la regresión logistica 
+
+
+```r
+anova(logRegRavens, test = "Chisq")
+```
+
+```
+## Analysis of Deviance Table
+## 
+## Model: binomial, link: logit
+## 
+## Response: ravensData$ravenWinNum
+## 
+## Terms added sequentially (first to last)
+## 
+## 
+##                       Df Deviance Resid. Df Resid. Dev Pr(>Chi)  
+## NULL                                     19     24.435           
+## ravensData$ravenScore  1   3.5398        18     20.895  0.05991 .
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+## Interpretando _Odds Ratios_
+
+- No probabilidades 
+- _Odds ratio_ de 1 = no hay diferencia en los  _odds_
+- log odds ratio de 0 = no hay diferencia en los  _odds_
+- Odds ratio < 0.5 o > 2 Comúnmente un "efecto moderado"
+- Riesgo relativo $\frac{\rm{Pr}(RW_i | RS_i = 10)}{\rm{Pr}(RW_i | RS_i = 0)}$, a menudo más fácil de interpretar, más difícil de estimar
+- Para probabilidades pequeñas RR $\approx$ OR pero __no son los mismo__!
+
+---
