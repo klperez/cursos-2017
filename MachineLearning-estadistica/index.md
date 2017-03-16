@@ -1595,7 +1595,9 @@ plot(ravensData$ravenScore,
      col = "blue" , xlab = "Score", ylab = "Prob Ravens ganen", frame.plot = F)
 ```
 
-<img src="assets/fig/unnamed-chunk-17-1.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" style="display: block; margin: auto;" />
+```
+## Error in plot(ravensData$ravenScore, logRegRavens$fitted, pch = 19, col = "blue", : objeto 'ravensData' no encontrado
+```
 
 
 ---
@@ -1663,5 +1665,274 @@ anova(logRegRavens, test = "Chisq")
 - Odds ratio < 0.5 o > 2 Comúnmente un "efecto moderado"
 - Riesgo relativo $\frac{\rm{Pr}(RW_i | RS_i = 10)}{\rm{Pr}(RW_i | RS_i = 0)}$, a menudo más fácil de interpretar, más difícil de estimar
 - Para probabilidades pequeñas RR $\approx$ OR pero __no son los mismo__!
+
+---
+
+## Idea principal - Regresión Poisson. 
+
+* Muchos eventos de interés toman la forma de conteos 
+  * Número de llamadas a un Call Center
+  * Número de casos de gripe en área determinada
+  * Número de personas que cruzan un puente peatonal en un día 
+* Los datos también pueden tomar forma de proporciones 
+  * Porcentajes de niños que pasan una prueba 
+  * Porcentaje de accesos a un sitio web de un país
+* La regresión lineal con una transformación puede ser una opción. 
+
+---
+
+## Distribución Poisson 
+
+- a distribución de Poisson es un modelo útil para conteos y tasas (proporciones)
+- Aquí una tasa es el conteo por cada tiempo de monitoreo
+- Algunos ejemplos de usos de la distribución de Poisson
+    - Modelado del tráfico del acceso web
+    - Tasas de accidentes
+    - Aproximación de probabilidades binomiales con $p$ pequeños y  $n$ grandes
+    - Analizar datos de tablas de contingencia
+
+---
+
+## La función de densidad de la Poisson
+
+- $X \sim Poisson(t\lambda)$ si
+
+$$
+P(X = x) = \frac{(t\lambda)^x e^{-t\lambda}}{x!}
+$$
+Para $x = 0, 1, \ldots$.
+- La media de la  Poisson es $E[X] = t\lambda$, esto es  $E[X / t] = \lambda$
+- La varianza de la Poisson $Var(X) = t\lambda$.
+- La Poisson tiende a la normal cuando $t\lambda$ se hace grande.
+
+---
+
+## Datos de un Website
+
+
+```r
+download.file("https://dl.dropboxusercontent.com/u/7710864/data/gaData.rda",destfile="./data/gaData.rda",method="curl")
+load("./data/gaData.rda")
+gaData$julian <- julian(gaData$date)
+head(gaData)
+```
+
+```
+##         date visits simplystats julian
+## 1 2011-01-01      0           0  14975
+## 2 2011-01-02      0           0  14976
+## 3 2011-01-03      0           0  14977
+## 4 2011-01-04      0           0  14978
+## 5 2011-01-05      0           0  14979
+## 6 2011-01-06      0           0  14980
+```
+
+[http://skardhamar.github.com/rga/](http://skardhamar.github.com/rga/)
+
+---
+
+## Gráfica de los datos
+
+
+```r
+plot(gaData$julian, gaData$visits,pch = 19,
+     col = "darkgrey", xlab = "Juliano", ylab = "Visitas", frame.plot = "F")
+```
+
+<img src="assets/fig/unnamed-chunk-20-1.png" title="plot of chunk unnamed-chunk-20" alt="plot of chunk unnamed-chunk-20" style="display: block; margin: auto;" />
+
+
+---
+
+
+## Regresión Lineal 
+
+$$ NH_i = b_0 + b_1 JD_i + e_i $$
+
+$NH_i$ - número de accesos (visitas) a la pagina 
+
+$JD_i$ - día del año (día Juliano)
+
+$b_0$ - número de accesos en el día Juliano 0 (1970-01-01)
+
+$b_1$ - incremento en el número de visitas por unidad de día
+
+$e_i$ - Variación debida a todo lo que no se midió
+
+
+---
+
+## Regresión Lineal 
+
+
+```r
+plot(gaData$julian,gaData$visits, pch = 19,
+     col = "darkgrey", xlab = "Juliano", ylab = "Visitas", frame.plot = "F")
+lm1 <- lm(gaData$visits ~ gaData$julian)
+abline(lm1, col = "red", lwd = 3)
+```
+
+<img src="assets/fig/linReg-1.png" title="plot of chunk linReg" alt="plot of chunk linReg" style="display: block; margin: auto;" />
+---
+
+## Aparte, tomando el logaritmo del resultado
+
+- tomar el logaritmo natural del resultado tiene una interpretación específica.
+- Considere el modelo
+
+$$ \log(NH_i) = b_0 + b_1 JD_i + e_i $$
+
+$NH_i$ - número de accesos (visitas) a la pagina 
+
+$JD_i$ - día del año (día Juliano)
+
+$b_0$ - logaritmo del número de accesos en el día Juliano 0 (1970-01-01)
+
+$b_1$ - incremento en el logaritmo del número de visitas por unidad de día
+
+$e_i$ - Variación debida a todo lo que no se midió
+
+---
+
+## Exponenciar los coeficientes
+
+- $e^{E[\log(Y)]}$ media geométrica de $Y$. 
+    - Sin covariables, esto es estimado por $e^{\frac{1}{n}\sum_{i=1}^n \log(y_i)} = (\prod_{i=1}^n y_i)^{1/n}$
+- Cuando se toma el logaritmo natural de los resultados y se ajusta un modelo de regresión, sus coeficientes exponenciales calculan las cosas sobre los medios geométricos.
+- $e^{\beta_0}$ estima la media geométrica de visitas en el día 0
+- $e^{\beta_1}$ estima el incremento o disminución relativa en media geométrica de las visitas a la pagina por día.
+
+---
+
+## Exponenciar los coeficientes
+
+- Hay un problema con los logaritmos  cuando tenemos conteos de 0, la adición de una constante, puede funcionar 
+
+
+```r
+round(exp(coef(lm(I(log(gaData$visits + 1)) ~ gaData$julian))), 5)
+```
+
+```
+##   (Intercept) gaData$julian 
+##       0.00000       1.00231
+```
+
+---
+
+## Regresión Lineal vs. Poisson 
+
+__Lineal__
+
+$$NH_i = b_0 + b_1 JD_i + e_i$$
+
+o
+
+$$E[NH_i | JD_i, b_0, b_1] = b_0 + b_1 JD_i$$
+
+__Poisson/log-lineal__
+
+$$\log\left(E[NH_i | JD_i, b_0, b_1]\right) = b_0 + b_1 JD_i$$
+
+o
+
+$$E[NH_i | JD_i, b_0, b_1] = \exp\left(b_0 + b_1 JD_i\right)$$
+
+
+---
+
+## Diferencias Multiplicativas
+
+<br><br>
+$$ E[NH_i | JD_i, b_0, b_1] = \exp\left(b_0 + b_1 JD_i\right) $$
+
+<br><br>
+
+$$ E[NH_i | JD_i, b_0, b_1] = \exp\left(b_0 \right)\exp\left(b_1 JD_i\right) $$
+
+<br><br>
+
+Si $JD_i$ es el incremento por unidad, $E[NH_i | JD_i, b_0, b_1]$ Se multiplica por $\exp\left(b_1\right)$
+
+---
+
+## Regresión Poisson en R
+
+
+```r
+plot(gaData$julian,gaData$visits,pch = 19,
+     col = "darkgrey", xlab = "Juliano", ylab = "Visitas", frame.plot = "F")
+glm1 <- glm(gaData$visits ~ gaData$julian, family = "poisson")
+abline(lm1, col = "red", lwd = 3); 
+lines(gaData$julian,glm1$fitted,col = "blue",lwd = 3)
+```
+
+![plot of chunk poisReg](assets/fig/poisReg-1.png)
+
+
+---
+
+## Relación media-varianza ? 
+
+
+```r
+plot(glm1$fitted,glm1$residuals,pch = 19,
+     col = "grey", ylab = "Residuals", xlab = "Fitted", frame.plot = "F")
+```
+
+<img src="assets/fig/unnamed-chunk-22-1.png" title="plot of chunk unnamed-chunk-22" alt="plot of chunk unnamed-chunk-22" style="display: block; margin: auto;" />
+
+---
+
+## Tasas
+
+
+<br><br>
+
+
+$$ E[NHSS_i | JD_i, b_0, b_1]/NH_i = \exp\left(b_0 + b_1 JD_i\right) $$
+
+<br><br>
+
+$$ \log\left(E[NHSS_i | JD_i, b_0, b_1]\right) - \log(NH_i)  =  b_0 + b_1 JD_i $$
+
+<br><br>
+
+$$ \log\left(E[NHSS_i | JD_i, b_0, b_1]\right) = \log(NH_i) + b_0 + b_1 JD_i $$
+
+---
+
+## Ajustando tasas en R 
+
+
+```r
+glm2 <- glm(gaData$simplystats ~ julian(gaData$date),
+            offset = log(visits + 1),
+            family = "poisson", data = gaData)
+plot(julian(gaData$date), glm2$fitted, 
+     col = "blue", pch = 19, xlab = "Fecha", ylab = "Conteos  ajustados",
+     frame.plot = "F")
+points(julian(gaData$date), glm1$fitted, col = "red", pch = 19)
+```
+
+<img src="assets/fig/ratesFit-1.png" title="plot of chunk ratesFit" alt="plot of chunk ratesFit" style="display: block; margin: auto;" />
+
+---
+
+## Ajustando tasas en R 
+
+
+```r
+glm2 <- glm(gaData$simplystats ~ julian(gaData$date),
+            offset = log(visits + 1),
+            family = "poisson", data = gaData)
+plot(julian(gaData$date),gaData$simplystats/(gaData$visits + 1),
+     col = "grey", xlab = "Fecha",
+     ylab = "Tasas ajustadas", pch = 19, frame.plot = "F")
+lines(julian(gaData$date),glm2$fitted/(gaData$visits + 1),
+      col = "blue", lwd = 3)
+```
+
+<img src="assets/fig/unnamed-chunk-23-1.png" title="plot of chunk unnamed-chunk-23" alt="plot of chunk unnamed-chunk-23" style="display: block; margin: auto;" />
 
 ---

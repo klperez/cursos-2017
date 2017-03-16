@@ -2211,7 +2211,8 @@ summary(logRegRavens)
      col = &quot;blue&quot; , xlab = &quot;Score&quot;, ylab = &quot;Prob Ravens ganen&quot;, frame.plot = F)
 </code></pre>
 
-<p><img src="assets/fig/unnamed-chunk-17-1.png" title="plot of chunk unnamed-chunk-17" alt="plot of chunk unnamed-chunk-17" style="display: block; margin: auto;" /></p>
+<pre><code>## Error in plot(ravensData$ravenScore, logRegRavens$fitted, pch = 19, col = &quot;blue&quot;, : objeto &#39;ravensData&#39; no encontrado
+</code></pre>
 
   </article>
   <!-- Presenter Notes -->
@@ -2291,6 +2292,356 @@ summary(logRegRavens)
 </slide>
 
 <slide class="" id="slide-109" style="background:;">
+  <hgroup>
+    <h2>Idea principal - Regresión Poisson.</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Muchos eventos de interés toman la forma de conteos 
+
+<ul>
+<li>Número de llamadas a un Call Center</li>
+<li>Número de casos de gripe en área determinada</li>
+<li>Número de personas que cruzan un puente peatonal en un día </li>
+</ul></li>
+<li>Los datos también pueden tomar forma de proporciones 
+
+<ul>
+<li>Porcentajes de niños que pasan una prueba </li>
+<li>Porcentaje de accesos a un sitio web de un país</li>
+</ul></li>
+<li>La regresión lineal con una transformación puede ser una opción. </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-110" style="background:;">
+  <hgroup>
+    <h2>Distribución Poisson</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>a distribución de Poisson es un modelo útil para conteos y tasas (proporciones)</li>
+<li>Aquí una tasa es el conteo por cada tiempo de monitoreo</li>
+<li>Algunos ejemplos de usos de la distribución de Poisson
+
+<ul>
+<li>Modelado del tráfico del acceso web</li>
+<li>Tasas de accidentes</li>
+<li>Aproximación de probabilidades binomiales con \(p\) pequeños y  \(n\) grandes</li>
+<li>Analizar datos de tablas de contingencia</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-111" style="background:;">
+  <hgroup>
+    <h2>La función de densidad de la Poisson</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>\(X \sim Poisson(t\lambda)\) si</li>
+</ul>
+
+<p>\[
+P(X = x) = \frac{(t\lambda)^x e^{-t\lambda}}{x!}
+\]
+Para \(x = 0, 1, \ldots\).</p>
+
+<ul>
+<li>La media de la  Poisson es \(E[X] = t\lambda\), esto es  \(E[X / t] = \lambda\)</li>
+<li>La varianza de la Poisson \(Var(X) = t\lambda\).</li>
+<li>La Poisson tiende a la normal cuando \(t\lambda\) se hace grande.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-112" style="background:;">
+  <hgroup>
+    <h2>Datos de un Website</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">download.file(&quot;https://dl.dropboxusercontent.com/u/7710864/data/gaData.rda&quot;,destfile=&quot;./data/gaData.rda&quot;,method=&quot;curl&quot;)
+load(&quot;./data/gaData.rda&quot;)
+gaData$julian &lt;- julian(gaData$date)
+head(gaData)
+</code></pre>
+
+<pre><code>##         date visits simplystats julian
+## 1 2011-01-01      0           0  14975
+## 2 2011-01-02      0           0  14976
+## 3 2011-01-03      0           0  14977
+## 4 2011-01-04      0           0  14978
+## 5 2011-01-05      0           0  14979
+## 6 2011-01-06      0           0  14980
+</code></pre>
+
+<p><a href="http://skardhamar.github.com/rga/">http://skardhamar.github.com/rga/</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-113" style="background:;">
+  <hgroup>
+    <h2>Gráfica de los datos</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">plot(gaData$julian, gaData$visits,pch = 19,
+     col = &quot;darkgrey&quot;, xlab = &quot;Juliano&quot;, ylab = &quot;Visitas&quot;, frame.plot = &quot;F&quot;)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-20-1.png" title="plot of chunk unnamed-chunk-20" alt="plot of chunk unnamed-chunk-20" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-114" style="background:;">
+  <hgroup>
+    <h2>Regresión Lineal</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>\[ NH_i = b_0 + b_1 JD_i + e_i \]</p>
+
+<p>\(NH_i\) - número de accesos (visitas) a la pagina </p>
+
+<p>\(JD_i\) - día del año (día Juliano)</p>
+
+<p>\(b_0\) - número de accesos en el día Juliano 0 (1970-01-01)</p>
+
+<p>\(b_1\) - incremento en el número de visitas por unidad de día</p>
+
+<p>\(e_i\) - Variación debida a todo lo que no se midió</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-115" style="background:;">
+  <hgroup>
+    <h2>Regresión Lineal</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">plot(gaData$julian,gaData$visits, pch = 19,
+     col = &quot;darkgrey&quot;, xlab = &quot;Juliano&quot;, ylab = &quot;Visitas&quot;, frame.plot = &quot;F&quot;)
+lm1 &lt;- lm(gaData$visits ~ gaData$julian)
+abline(lm1, col = &quot;red&quot;, lwd = 3)
+</code></pre>
+
+<h2><img src="assets/fig/linReg-1.png" title="plot of chunk linReg" alt="plot of chunk linReg" style="display: block; margin: auto;" /></h2>
+
+<h2>Aparte, tomando el logaritmo del resultado</h2>
+
+<ul>
+<li>tomar el logaritmo natural del resultado tiene una interpretación específica.</li>
+<li>Considere el modelo</li>
+</ul>
+
+<p>\[ \log(NH_i) = b_0 + b_1 JD_i + e_i \]</p>
+
+<p>\(NH_i\) - número de accesos (visitas) a la pagina </p>
+
+<p>\(JD_i\) - día del año (día Juliano)</p>
+
+<p>\(b_0\) - logaritmo del número de accesos en el día Juliano 0 (1970-01-01)</p>
+
+<p>\(b_1\) - incremento en el logaritmo del número de visitas por unidad de día</p>
+
+<p>\(e_i\) - Variación debida a todo lo que no se midió</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-116" style="background:;">
+  <hgroup>
+    <h2>Exponenciar los coeficientes</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>\(e^{E[\log(Y)]}\) media geométrica de \(Y\). 
+
+<ul>
+<li>Sin covariables, esto es estimado por \(e^{\frac{1}{n}\sum_{i=1}^n \log(y_i)} = (\prod_{i=1}^n y_i)^{1/n}\)</li>
+</ul></li>
+<li>Cuando se toma el logaritmo natural de los resultados y se ajusta un modelo de regresión, sus coeficientes exponenciales calculan las cosas sobre los medios geométricos.</li>
+<li>\(e^{\beta_0}\) estima la media geométrica de visitas en el día 0</li>
+<li>\(e^{\beta_1}\) estima el incremento o disminución relativa en media geométrica de las visitas a la pagina por día.</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-117" style="background:;">
+  <hgroup>
+    <h2>Exponenciar los coeficientes</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Hay un problema con los logaritmos  cuando tenemos conteos de 0, la adición de una constante, puede funcionar </li>
+</ul>
+
+<pre><code class="r">round(exp(coef(lm(I(log(gaData$visits + 1)) ~ gaData$julian))), 5)
+</code></pre>
+
+<pre><code>##   (Intercept) gaData$julian 
+##       0.00000       1.00231
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-118" style="background:;">
+  <hgroup>
+    <h2>Regresión Lineal vs. Poisson</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><strong>Lineal</strong></p>
+
+<p>\[NH_i = b_0 + b_1 JD_i + e_i\]</p>
+
+<p>o</p>
+
+<p>\[E[NH_i | JD_i, b_0, b_1] = b_0 + b_1 JD_i\]</p>
+
+<p><strong>Poisson/log-lineal</strong></p>
+
+<p>\[\log\left(E[NH_i | JD_i, b_0, b_1]\right) = b_0 + b_1 JD_i\]</p>
+
+<p>o</p>
+
+<p>\[E[NH_i | JD_i, b_0, b_1] = \exp\left(b_0 + b_1 JD_i\right)\]</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-119" style="background:;">
+  <hgroup>
+    <h2>Diferencias Multiplicativas</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><br><br>
+\[ E[NH_i | JD_i, b_0, b_1] = \exp\left(b_0 + b_1 JD_i\right) \]</p>
+
+<p><br><br></p>
+
+<p>\[ E[NH_i | JD_i, b_0, b_1] = \exp\left(b_0 \right)\exp\left(b_1 JD_i\right) \]</p>
+
+<p><br><br></p>
+
+<p>Si \(JD_i\) es el incremento por unidad, \(E[NH_i | JD_i, b_0, b_1]\) Se multiplica por \(\exp\left(b_1\right)\)</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-120" style="background:;">
+  <hgroup>
+    <h2>Regresión Poisson en R</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">plot(gaData$julian,gaData$visits,pch = 19,
+     col = &quot;darkgrey&quot;, xlab = &quot;Juliano&quot;, ylab = &quot;Visitas&quot;, frame.plot = &quot;F&quot;)
+glm1 &lt;- glm(gaData$visits ~ gaData$julian, family = &quot;poisson&quot;)
+abline(lm1, col = &quot;red&quot;, lwd = 3); 
+lines(gaData$julian,glm1$fitted,col = &quot;blue&quot;,lwd = 3)
+</code></pre>
+
+<p><img src="assets/fig/poisReg-1.png" alt="plot of chunk poisReg"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-121" style="background:;">
+  <hgroup>
+    <h2>Relación media-varianza ?</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">plot(glm1$fitted,glm1$residuals,pch = 19,
+     col = &quot;grey&quot;, ylab = &quot;Residuals&quot;, xlab = &quot;Fitted&quot;, frame.plot = &quot;F&quot;)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-22-1.png" title="plot of chunk unnamed-chunk-22" alt="plot of chunk unnamed-chunk-22" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-122" style="background:;">
+  <hgroup>
+    <h2>Tasas</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><br><br></p>
+
+<p>\[ E[NHSS_i | JD_i, b_0, b_1]/NH_i = \exp\left(b_0 + b_1 JD_i\right) \]</p>
+
+<p><br><br></p>
+
+<p>\[ \log\left(E[NHSS_i | JD_i, b_0, b_1]\right) - \log(NH_i)  =  b_0 + b_1 JD_i \]</p>
+
+<p><br><br></p>
+
+<p>\[ \log\left(E[NHSS_i | JD_i, b_0, b_1]\right) = \log(NH_i) + b_0 + b_1 JD_i \]</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-123" style="background:;">
+  <hgroup>
+    <h2>Ajustando tasas en R</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">glm2 &lt;- glm(gaData$simplystats ~ julian(gaData$date),
+            offset = log(visits + 1),
+            family = &quot;poisson&quot;, data = gaData)
+plot(julian(gaData$date), glm2$fitted, 
+     col = &quot;blue&quot;, pch = 19, xlab = &quot;Fecha&quot;, ylab = &quot;Conteos  ajustados&quot;,
+     frame.plot = &quot;F&quot;)
+points(julian(gaData$date), glm1$fitted, col = &quot;red&quot;, pch = 19)
+</code></pre>
+
+<p><img src="assets/fig/ratesFit-1.png" title="plot of chunk ratesFit" alt="plot of chunk ratesFit" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-124" style="background:;">
+  <hgroup>
+    <h2>Ajustando tasas en R</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">glm2 &lt;- glm(gaData$simplystats ~ julian(gaData$date),
+            offset = log(visits + 1),
+            family = &quot;poisson&quot;, data = gaData)
+plot(julian(gaData$date),gaData$simplystats/(gaData$visits + 1),
+     col = &quot;grey&quot;, xlab = &quot;Fecha&quot;,
+     ylab = &quot;Tasas ajustadas&quot;, pch = 19, frame.plot = &quot;F&quot;)
+lines(julian(gaData$date),glm2$fitted/(gaData$visits + 1),
+      col = &quot;blue&quot;, lwd = 3)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-23-1.png" title="plot of chunk unnamed-chunk-23" alt="plot of chunk unnamed-chunk-23" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-125" style="background:;">
   <article data-timings="">
     
   </article>
@@ -2951,8 +3302,104 @@ summary(logRegRavens)
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=109 title='NA'>
+        data-slide=109 title='Idea principal - Regresión Poisson.'>
          109
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=110 title='Distribución Poisson'>
+         110
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=111 title='La función de densidad de la Poisson'>
+         111
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=112 title='Datos de un Website'>
+         112
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=113 title='Gráfica de los datos'>
+         113
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=114 title='Regresión Lineal'>
+         114
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=115 title='Regresión Lineal'>
+         115
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=116 title='Exponenciar los coeficientes'>
+         116
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=117 title='Exponenciar los coeficientes'>
+         117
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=118 title='Regresión Lineal vs. Poisson'>
+         118
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=119 title='Diferencias Multiplicativas'>
+         119
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=120 title='Regresión Poisson en R'>
+         120
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=121 title='Relación media-varianza ?'>
+         121
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=122 title='Tasas'>
+         122
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=123 title='Ajustando tasas en R'>
+         123
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=124 title='Ajustando tasas en R'>
+         124
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=125 title='NA'>
+         125
       </a>
     </li>
   </ul>
