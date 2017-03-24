@@ -8,3 +8,6 @@ Formula
 ggplot2
 Hmisc
 UsingR
+caret
+rpart
+rattle

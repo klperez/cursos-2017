@@ -1773,7 +1773,9 @@ abline(lm1, col = "red", lwd = 3)
 ```
 
 <img src="assets/fig/linReg-1.png" title="plot of chunk linReg" alt="plot of chunk linReg" style="display: block; margin: auto;" />
+
 ---
+
 
 ## Aparte, tomando el logaritmo del resultado
 
@@ -1867,7 +1869,7 @@ abline(lm1, col = "red", lwd = 3);
 lines(gaData$julian,glm1$fitted,col = "blue",lwd = 3)
 ```
 
-![plot of chunk poisReg](assets/fig/poisReg-1.png)
+<img src="assets/fig/poisReg-1.png" title="plot of chunk poisReg" alt="plot of chunk poisReg" style="display: block; margin: auto;" />
 
 
 ---
@@ -1934,5 +1936,221 @@ lines(julian(gaData$date),glm2$fitted/(gaData$visits + 1),
 ```
 
 <img src="assets/fig/unnamed-chunk-23-1.png" title="plot of chunk unnamed-chunk-23" alt="plot of chunk unnamed-chunk-23" style="display: block; margin: auto;" />
+
+---
+
+## Árboles de decisión 
+
+- Divide iterativamente variables en grupos 
+- Evalúa la "homogeneidad" dentro de los grupos 
+- Divide nuevamente si es necesario 
+
+__Pros__:
+
+- fácil de interpretar 
+- Mejor desempeño en funciones no lineales 
+
+__Cons__:
+
+- sin validación cruzada puede tender a al sobreajuste 
+- hace mas difícil estimar la incertidumbre 
+
+---
+
+## Ejemplo
+
+<center>![](assets/img/tree.png)</center>
+
+[http://graphics8.nytimes.com/images/2008/04/16/us/0416-nat-subOBAMA.jpg](http://graphics8.nytimes.com/images/2008/04/16/us/0416-nat-subOBAMA.jpg)
+
+---
+
+## Algoritmo 
+
+1. Comienza con todas las variables en un solo grupo 
+2. Encuentra la variable que mejor divide la salida 
+3. Divida los datos en dos grupos ("hojas") y en esa división ("nodo")
+4. Con cada división, encuentra la variable que mejor divide la salida 
+5. Continúe hasta que los grupos sean demasiado pequeños o suficientemente "puros"
+
+---
+
+## Medidas de "Impureza"
+
+$$\hat{p}_{mk} = \frac{1}{N_m}\sum_{x_i\; in \; Leaf \; m}\mathbb{1}(y_i = k)$$
+
+__Error de clasificación errónea__: 
+$$ 1 - \hat{p}_{m k(m)}; k(m) = {\rm most; common; k}$$ 
+- 0 = pureza perfecta
+- 0.5 = sin pureza
+
+__Índice de Gini__:
+$$ \sum_{k \neq k'} \hat{p}_{mk} \times \hat{p}_{mk'} = \sum_{k=1}^K \hat{p}_{mk}(1-\hat{p}_{mk}) = 1 - \sum_{k=1}^K p_{mk}^2$$
+
+- 0 = pureza perfecta
+- 0.5 = sin pureza
+
+---
+
+## Medidas de "Impureza"
+
+__Deviance/ganancia de información__:
+
+$$ -\sum_{k=1}^K \hat{p}_{mk} \log_2\hat{p}_{mk} $$
+
+- 0 = pureza perfecta
+- 1 = sin pureza
+
+---&twocol w1:50% w2:50%
+
+## Medidas de "Impureza" 
+
+
+*** =left
+
+<img src="assets/fig/leftplot-1.png" title="plot of chunk leftplot" alt="plot of chunk leftplot" style="display: block; margin: auto;" />
+
+- __Calsificación erronea:__ $1/16 = 0.06$
+- __Gini:__ $1 - [(1/16)^2 + (15/16)^2] = 0.12$
+- __Inf:__ $-[1/16 \times log2(1/16) + 15/16 \times log2(15/16)] = 0.34$
+
+*** =right
+
+<img src="assets/fig/unnamed-chunk-24-1.png" title="plot of chunk unnamed-chunk-24" alt="plot of chunk unnamed-chunk-24" style="display: block; margin: auto;" />
+
+- __Calsificación erronea:__ $8/16 = 0.5$
+- __Gini:__ $1 - [(8/16)^2 + (8/16)^2] = 0.5$
+- __Inf:__ $-[1/16 \times log2(1/16)+15/16 \times log2(15/16)] = 1$
+
+---
+
+## Ejemplo: Iris Data
+
+
+```r
+data(iris); suppressMessages(suppressWarnings(library(ggplot2)))
+names(iris)
+```
+
+```
+## [1] "Sepal.Length" "Sepal.Width"  "Petal.Length" "Petal.Width" 
+## [5] "Species"
+```
+
+```r
+table(iris$Species)
+```
+
+```
+## 
+##     setosa versicolor  virginica 
+##         50         50         50
+```
+
+
+---
+
+
+## Conjuntos training y test 
+
+
+```r
+suppressMessages(suppressWarnings(library(caret)))
+inTrain <- createDataPartition(y=iris$Species,
+                              p=0.7, list=FALSE)
+training <- iris[inTrain,]
+testing <- iris[-inTrain,]
+dim(training); dim(testing)
+```
+
+```
+## [1] 105   5
+```
+
+```
+## [1] 45  5
+```
+
+---
+
+## Iris petal widths/sepal width
+
+
+```r
+qplot(Petal.Width,Sepal.Width,colour=Species,data=training)
+```
+
+<img src="assets/fig/unnamed-chunk-25-1.png" title="plot of chunk unnamed-chunk-25" alt="plot of chunk unnamed-chunk-25" style="display: block; margin: auto;" />
+
+
+---
+
+## Iris petal widths/sepal width
+
+
+```r
+modFit <- train(Species ~ .,method = "rpart",data = training)
+print(modFit$finalModel)
+```
+
+```
+## n= 105 
+## 
+## node), split, n, loss, yval, (yprob)
+##       * denotes terminal node
+## 
+## 1) root 105 70 setosa (0.33333333 0.33333333 0.33333333)  
+##   2) Petal.Length< 2.5 35  0 setosa (1.00000000 0.00000000 0.00000000) *
+##   3) Petal.Length>=2.5 70 35 versicolor (0.00000000 0.50000000 0.50000000)  
+##     6) Petal.Width< 1.75 36  2 versicolor (0.00000000 0.94444444 0.05555556) *
+##     7) Petal.Width>=1.75 34  1 virginica (0.00000000 0.02941176 0.97058824) *
+```
+
+---
+
+## Gráfico tree
+
+
+```r
+plot(modFit$finalModel, uniform = TRUE, 
+      main = "Classification Tree")
+text(modFit$finalModel, use.n = TRUE, all = TRUE, cex = .4)
+```
+
+<img src="assets/fig/unnamed-chunk-26-1.png" title="plot of chunk unnamed-chunk-26" alt="plot of chunk unnamed-chunk-26" style="display: block; margin: auto;" />
+
+
+---
+
+## Gráfico tree
+
+
+```r
+suppressMessages(suppressWarnings(library(rattle)))
+fancyRpartPlot(modFit$finalModel)
+```
+
+<img src="assets/fig/unnamed-chunk-27-1.png" title="plot of chunk unnamed-chunk-27" alt="plot of chunk unnamed-chunk-27" style="display: block; margin: auto;" />
+
+---
+
+## Predicciones 
+
+
+```r
+predict(modFit,newdata=testing)
+```
+
+```
+##  [1] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [7] setosa     setosa     setosa     setosa     setosa     setosa    
+## [13] setosa     setosa     setosa     versicolor versicolor versicolor
+## [19] versicolor versicolor versicolor versicolor versicolor versicolor
+## [25] versicolor versicolor versicolor versicolor versicolor versicolor
+## [31] virginica  versicolor virginica  virginica  virginica  virginica 
+## [37] virginica  versicolor virginica  virginica  virginica  versicolor
+## [43] virginica  virginica  virginica 
+## Levels: setosa versicolor virginica
+```
 
 ---

@@ -1551,7 +1551,9 @@ plot(gaData$julian,gaData$visits, pch = 19,
 lm1 <- lm(gaData$visits ~ gaData$julian)
 abline(lm1, col = "red", lwd = 3)
 ```
+
 ---
+
 
 ## Aparte, tomando el logaritmo del resultado
 
@@ -1630,7 +1632,7 @@ Si $JD_i$ es el incremento por unidad, $E[NH_i | JD_i, b_0, b_1]$ Se multiplica 
 
 ## Regresión Poisson en R
 
-```{r poisReg, dependson="linReg",fig.height=5,fig.width=8, fig.aling = 'center', cache=TRUE}
+```{r poisReg, dependson="linReg",fig.height=5,fig.width=8, fig.align='center', cache=TRUE}
 plot(gaData$julian,gaData$visits,pch = 19,
      col = "darkgrey", xlab = "Juliano", ylab = "Visitas", frame.plot = "F")
 glm1 <- glm(gaData$visits ~ gaData$julian, family = "poisson")
@@ -1694,6 +1696,169 @@ plot(julian(gaData$date),gaData$simplystats/(gaData$visits + 1),
      ylab = "Tasas ajustadas", pch = 19, frame.plot = "F")
 lines(julian(gaData$date),glm2$fitted/(gaData$visits + 1),
       col = "blue", lwd = 3)
+```
+
+---
+
+## Árboles de decisión 
+
+- Divide iterativamente variables en grupos 
+- Evalúa la "homogeneidad" dentro de los grupos 
+- Divide nuevamente si es necesario 
+
+__Pros__:
+
+- fácil de interpretar 
+- Mejor desempeño en funciones no lineales 
+
+__Cons__:
+
+- sin validación cruzada puede tender a al sobreajuste 
+- hace mas difícil estimar la incertidumbre 
+
+---
+
+## Ejemplo
+
+<center>![](assets/img/tree.png)</center>
+
+[http://graphics8.nytimes.com/images/2008/04/16/us/0416-nat-subOBAMA.jpg](http://graphics8.nytimes.com/images/2008/04/16/us/0416-nat-subOBAMA.jpg)
+
+---
+
+## Algoritmo 
+
+1. Comienza con todas las variables en un solo grupo 
+2. Encuentra la variable que mejor divide la salida 
+3. Divida los datos en dos grupos ("hojas") y en esa división ("nodo")
+4. Con cada división, encuentra la variable que mejor divide la salida 
+5. Continúe hasta que los grupos sean demasiado pequeños o suficientemente "puros"
+
+---
+
+## Medidas de "Impureza"
+
+$$\hat{p}_{mk} = \frac{1}{N_m}\sum_{x_i\; in \; Leaf \; m}\mathbb{1}(y_i = k)$$
+
+__Error de clasificación errónea__: 
+$$ 1 - \hat{p}_{m k(m)}; k(m) = {\rm most; common; k}$$ 
+- 0 = pureza perfecta
+- 0.5 = sin pureza
+
+__Índice de Gini__:
+$$ \sum_{k \neq k'} \hat{p}_{mk} \times \hat{p}_{mk'} = \sum_{k=1}^K \hat{p}_{mk}(1-\hat{p}_{mk}) = 1 - \sum_{k=1}^K p_{mk}^2$$
+
+- 0 = pureza perfecta
+- 0.5 = sin pureza
+
+---
+
+## Medidas de "Impureza"
+
+__Deviance/ganancia de información__:
+
+$$ -\sum_{k=1}^K \hat{p}_{mk} \log_2\hat{p}_{mk} $$
+
+- 0 = pureza perfecta
+- 1 = sin pureza
+
+---&twocol w1:50% w2:50%
+
+## Medidas de "Impureza" 
+
+
+*** =left
+
+```{r leftplot,fig.height=3,fig.width=4,echo=FALSE,fig.align="center"}
+par(mar = c(0,0,0,0)); set.seed(1234); 
+x = rep(1:4,each = 4); y = rep(1:4,4)
+plot(x, y, xaxt = "n", yaxt = "n", cex = 3, col = c(rep("blue",15),rep("red",1)),pch = 19)
+```
+
+- __Calsificación erronea:__ $1/16 = 0.06$
+- __Gini:__ $1 - [(1/16)^2 + (15/16)^2] = 0.12$
+- __Inf:__ $-[1/16 \times log2(1/16) + 15/16 \times log2(15/16)] = 0.34$
+
+*** =right
+
+```{r,dependson="leftplot",fig.height=3,fig.width=4,echo=FALSE,fig.align="center"}
+par(mar=c(0,0,0,0)); 
+plot(x,y,xaxt="n",yaxt="n",cex=3,col=c(rep("blue",8),rep("red",8)),pch=19)
+```
+
+- __Calsificación erronea:__ $8/16 = 0.5$
+- __Gini:__ $1 - [(8/16)^2 + (8/16)^2] = 0.5$
+- __Inf:__ $-[1/16 \times log2(1/16)+15/16 \times log2(15/16)] = 1$
+
+---
+
+## Ejemplo: Iris Data
+
+```{r iris, cache=TRUE}
+data(iris); suppressMessages(suppressWarnings(library(ggplot2)))
+names(iris)
+table(iris$Species)
+```
+
+
+---
+
+
+## Conjuntos training y test 
+
+```{r trainingTest, dependson="iris",cache=TRUE}
+suppressMessages(suppressWarnings(library(caret)))
+inTrain <- createDataPartition(y=iris$Species,
+                              p=0.7, list=FALSE)
+training <- iris[inTrain,]
+testing <- iris[-inTrain,]
+dim(training); dim(testing)
+```
+
+---
+
+## Iris petal widths/sepal width
+
+```{r, dependson="trainingTest",fig.height=6,fig.width=8, fig.align='center'}
+qplot(Petal.Width,Sepal.Width,colour=Species,data=training)
+```
+
+
+---
+
+## Iris petal widths/sepal width
+
+```{r createTree, dependson="trainingTest", cache=TRUE}
+modFit <- train(Species ~ .,method = "rpart",data = training)
+print(modFit$finalModel)
+```
+
+---
+
+## Gráfico tree
+
+```{r, dependson="createTree", fig.height=5, fig.width=6, fig.align='center'}
+plot(modFit$finalModel, uniform = TRUE, 
+      main = "Classification Tree")
+text(modFit$finalModel, use.n = TRUE, all = TRUE, cex = .4)
+```
+
+
+---
+
+## Gráfico tree
+
+```{r, dependson="createTree", fig.height=5, fig.width=8, fig.align='center'}
+suppressMessages(suppressWarnings(library(rattle)))
+fancyRpartPlot(modFit$finalModel)
+```
+
+---
+
+## Predicciones 
+
+```{r newdata, dependson="createTree", fig.height=4.5, fig.width=4.5, cache=TRUE}
+predict(modFit,newdata=testing)
 ```
 
 ---

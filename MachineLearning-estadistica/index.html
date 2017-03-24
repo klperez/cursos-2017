@@ -2436,11 +2436,18 @@ lm1 &lt;- lm(gaData$visits ~ gaData$julian)
 abline(lm1, col = &quot;red&quot;, lwd = 3)
 </code></pre>
 
-<h2><img src="assets/fig/linReg-1.png" title="plot of chunk linReg" alt="plot of chunk linReg" style="display: block; margin: auto;" /></h2>
+<p><img src="assets/fig/linReg-1.png" title="plot of chunk linReg" alt="plot of chunk linReg" style="display: block; margin: auto;" /></p>
 
-<h2>Aparte, tomando el logaritmo del resultado</h2>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
 
-<ul>
+<slide class="" id="slide-116" style="background:;">
+  <hgroup>
+    <h2>Aparte, tomando el logaritmo del resultado</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
 <li>tomar el logaritmo natural del resultado tiene una interpretación específica.</li>
 <li>Considere el modelo</li>
 </ul>
@@ -2461,7 +2468,7 @@ abline(lm1, col = &quot;red&quot;, lwd = 3)
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-116" style="background:;">
+<slide class="" id="slide-117" style="background:;">
   <hgroup>
     <h2>Exponenciar los coeficientes</h2>
   </hgroup>
@@ -2481,7 +2488,7 @@ abline(lm1, col = &quot;red&quot;, lwd = 3)
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-117" style="background:;">
+<slide class="" id="slide-118" style="background:;">
   <hgroup>
     <h2>Exponenciar los coeficientes</h2>
   </hgroup>
@@ -2501,7 +2508,7 @@ abline(lm1, col = &quot;red&quot;, lwd = 3)
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-118" style="background:;">
+<slide class="" id="slide-119" style="background:;">
   <hgroup>
     <h2>Regresión Lineal vs. Poisson</h2>
   </hgroup>
@@ -2526,7 +2533,7 @@ abline(lm1, col = &quot;red&quot;, lwd = 3)
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-119" style="background:;">
+<slide class="" id="slide-120" style="background:;">
   <hgroup>
     <h2>Diferencias Multiplicativas</h2>
   </hgroup>
@@ -2546,7 +2553,7 @@ abline(lm1, col = &quot;red&quot;, lwd = 3)
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-120" style="background:;">
+<slide class="" id="slide-121" style="background:;">
   <hgroup>
     <h2>Regresión Poisson en R</h2>
   </hgroup>
@@ -2558,13 +2565,13 @@ abline(lm1, col = &quot;red&quot;, lwd = 3);
 lines(gaData$julian,glm1$fitted,col = &quot;blue&quot;,lwd = 3)
 </code></pre>
 
-<p><img src="assets/fig/poisReg-1.png" alt="plot of chunk poisReg"></p>
+<p><img src="assets/fig/poisReg-1.png" title="plot of chunk poisReg" alt="plot of chunk poisReg" style="display: block; margin: auto;" /></p>
 
   </article>
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-121" style="background:;">
+<slide class="" id="slide-122" style="background:;">
   <hgroup>
     <h2>Relación media-varianza ?</h2>
   </hgroup>
@@ -2579,7 +2586,7 @@ lines(gaData$julian,glm1$fitted,col = &quot;blue&quot;,lwd = 3)
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-122" style="background:;">
+<slide class="" id="slide-123" style="background:;">
   <hgroup>
     <h2>Tasas</h2>
   </hgroup>
@@ -2600,7 +2607,7 @@ lines(gaData$julian,glm1$fitted,col = &quot;blue&quot;,lwd = 3)
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-123" style="background:;">
+<slide class="" id="slide-124" style="background:;">
   <hgroup>
     <h2>Ajustando tasas en R</h2>
   </hgroup>
@@ -2620,7 +2627,7 @@ points(julian(gaData$date), glm1$fitted, col = &quot;red&quot;, pch = 19)
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-124" style="background:;">
+<slide class="" id="slide-125" style="background:;">
   <hgroup>
     <h2>Ajustando tasas en R</h2>
   </hgroup>
@@ -2641,7 +2648,282 @@ lines(julian(gaData$date),glm2$fitted/(gaData$visits + 1),
   <!-- Presenter Notes -->
 </slide>
 
-<slide class="" id="slide-125" style="background:;">
+<slide class="" id="slide-126" style="background:;">
+  <hgroup>
+    <h2>Árboles de decisión</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Divide iterativamente variables en grupos </li>
+<li>Evalúa la &quot;homogeneidad&quot; dentro de los grupos </li>
+<li>Divide nuevamente si es necesario </li>
+</ul>
+
+<p><strong>Pros</strong>:</p>
+
+<ul>
+<li>fácil de interpretar </li>
+<li>Mejor desempeño en funciones no lineales </li>
+</ul>
+
+<p><strong>Cons</strong>:</p>
+
+<ul>
+<li>sin validación cruzada puede tender a al sobreajuste </li>
+<li>hace mas difícil estimar la incertidumbre </li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-127" style="background:;">
+  <hgroup>
+    <h2>Ejemplo</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/tree.png" alt=""></center></p>
+
+<p><a href="http://graphics8.nytimes.com/images/2008/04/16/us/0416-nat-subOBAMA.jpg">http://graphics8.nytimes.com/images/2008/04/16/us/0416-nat-subOBAMA.jpg</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-128" style="background:;">
+  <hgroup>
+    <h2>Algoritmo</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>Comienza con todas las variables en un solo grupo </li>
+<li>Encuentra la variable que mejor divide la salida </li>
+<li>Divida los datos en dos grupos (&quot;hojas&quot;) y en esa división (&quot;nodo&quot;)</li>
+<li>Con cada división, encuentra la variable que mejor divide la salida </li>
+<li>Continúe hasta que los grupos sean demasiado pequeños o suficientemente &quot;puros&quot;</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-129" style="background:;">
+  <hgroup>
+    <h2>Medidas de &quot;Impureza&quot;</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>\[\hat{p}_{mk} = \frac{1}{N_m}\sum_{x_i\; in \; Leaf \; m}\mathbb{1}(y_i = k)\]</p>
+
+<p><strong>Error de clasificación errónea</strong>: 
+\[ 1 - \hat{p}_{m k(m)}; k(m) = {\rm most; common; k}\] </p>
+
+<ul>
+<li>0 = pureza perfecta</li>
+<li>0.5 = sin pureza</li>
+</ul>
+
+<p><strong>Índice de Gini</strong>:
+\[ \sum_{k \neq k'} \hat{p}_{mk} \times \hat{p}_{mk'} = \sum_{k=1}^K \hat{p}_{mk}(1-\hat{p}_{mk}) = 1 - \sum_{k=1}^K p_{mk}^2\]</p>
+
+<ul>
+<li>0 = pureza perfecta</li>
+<li>0.5 = sin pureza</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-130" style="background:;">
+  <hgroup>
+    <h2>Medidas de &quot;Impureza&quot;</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><strong>Deviance/ganancia de información</strong>:</p>
+
+<p>\[ -\sum_{k=1}^K \hat{p}_{mk} \log_2\hat{p}_{mk} \]</p>
+
+<ul>
+<li>0 = pureza perfecta</li>
+<li>1 = sin pureza</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-131" style="background:;">
+  <hgroup>
+    <h2>Medidas de &quot;Impureza&quot;</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div style='float:left;width:48%;' class='centered'>
+  <p><img src="assets/fig/leftplot-1.png" title="plot of chunk leftplot" alt="plot of chunk leftplot" style="display: block; margin: auto;" /></p>
+
+<ul>
+<li><strong>Calsificación erronea:</strong> \(1/16 = 0.06\)</li>
+<li><strong>Gini:</strong> \(1 - [(1/16)^2 + (15/16)^2] = 0.12\)</li>
+<li><strong>Inf:</strong> \(-[1/16 \times log2(1/16) + 15/16 \times log2(15/16)] = 0.34\)</li>
+</ul>
+
+</div>
+<div style='float:right;width:48%;'>
+  <p><img src="assets/fig/unnamed-chunk-24-1.png" title="plot of chunk unnamed-chunk-24" alt="plot of chunk unnamed-chunk-24" style="display: block; margin: auto;" /></p>
+
+<ul>
+<li><strong>Calsificación erronea:</strong> \(8/16 = 0.5\)</li>
+<li><strong>Gini:</strong> \(1 - [(8/16)^2 + (8/16)^2] = 0.5\)</li>
+<li><strong>Inf:</strong> \(-[1/16 \times log2(1/16)+15/16 \times log2(15/16)] = 1\)</li>
+</ul>
+
+</div>
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-132" style="background:;">
+  <hgroup>
+    <h2>Ejemplo: Iris Data</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">data(iris); suppressMessages(suppressWarnings(library(ggplot2)))
+names(iris)
+</code></pre>
+
+<pre><code>## [1] &quot;Sepal.Length&quot; &quot;Sepal.Width&quot;  &quot;Petal.Length&quot; &quot;Petal.Width&quot; 
+## [5] &quot;Species&quot;
+</code></pre>
+
+<pre><code class="r">table(iris$Species)
+</code></pre>
+
+<pre><code>## 
+##     setosa versicolor  virginica 
+##         50         50         50
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-133" style="background:;">
+  <hgroup>
+    <h2>Conjuntos training y test</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">suppressMessages(suppressWarnings(library(caret)))
+inTrain &lt;- createDataPartition(y=iris$Species,
+                              p=0.7, list=FALSE)
+training &lt;- iris[inTrain,]
+testing &lt;- iris[-inTrain,]
+dim(training); dim(testing)
+</code></pre>
+
+<pre><code>## [1] 105   5
+</code></pre>
+
+<pre><code>## [1] 45  5
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-134" style="background:;">
+  <hgroup>
+    <h2>Iris petal widths/sepal width</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">qplot(Petal.Width,Sepal.Width,colour=Species,data=training)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-25-1.png" title="plot of chunk unnamed-chunk-25" alt="plot of chunk unnamed-chunk-25" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-135" style="background:;">
+  <hgroup>
+    <h2>Iris petal widths/sepal width</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">modFit &lt;- train(Species ~ .,method = &quot;rpart&quot;,data = training)
+print(modFit$finalModel)
+</code></pre>
+
+<pre><code>## n= 105 
+## 
+## node), split, n, loss, yval, (yprob)
+##       * denotes terminal node
+## 
+## 1) root 105 70 setosa (0.33333333 0.33333333 0.33333333)  
+##   2) Petal.Length&lt; 2.5 35  0 setosa (1.00000000 0.00000000 0.00000000) *
+##   3) Petal.Length&gt;=2.5 70 35 versicolor (0.00000000 0.50000000 0.50000000)  
+##     6) Petal.Width&lt; 1.75 36  2 versicolor (0.00000000 0.94444444 0.05555556) *
+##     7) Petal.Width&gt;=1.75 34  1 virginica (0.00000000 0.02941176 0.97058824) *
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-136" style="background:;">
+  <hgroup>
+    <h2>Gráfico tree</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">plot(modFit$finalModel, uniform = TRUE, 
+      main = &quot;Classification Tree&quot;)
+text(modFit$finalModel, use.n = TRUE, all = TRUE, cex = .4)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-26-1.png" title="plot of chunk unnamed-chunk-26" alt="plot of chunk unnamed-chunk-26" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-137" style="background:;">
+  <hgroup>
+    <h2>Gráfico tree</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">suppressMessages(suppressWarnings(library(rattle)))
+fancyRpartPlot(modFit$finalModel)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-27-1.png" title="plot of chunk unnamed-chunk-27" alt="plot of chunk unnamed-chunk-27" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-138" style="background:;">
+  <hgroup>
+    <h2>Predicciones</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">predict(modFit,newdata=testing)
+</code></pre>
+
+<pre><code>##  [1] setosa     setosa     setosa     setosa     setosa     setosa    
+##  [7] setosa     setosa     setosa     setosa     setosa     setosa    
+## [13] setosa     setosa     setosa     versicolor versicolor versicolor
+## [19] versicolor versicolor versicolor versicolor versicolor versicolor
+## [25] versicolor versicolor versicolor versicolor versicolor versicolor
+## [31] virginica  versicolor virginica  virginica  virginica  virginica 
+## [37] virginica  versicolor virginica  virginica  virginica  versicolor
+## [43] virginica  virginica  virginica 
+## Levels: setosa versicolor virginica
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-139" style="background:;">
   <article data-timings="">
     
   </article>
@@ -3344,7 +3626,7 @@ lines(julian(gaData$date),glm2$fitted/(gaData$visits + 1),
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=116 title='Exponenciar los coeficientes'>
+        data-slide=116 title='Aparte, tomando el logaritmo del resultado'>
          116
       </a>
     </li>
@@ -3356,37 +3638,37 @@ lines(julian(gaData$date),glm2$fitted/(gaData$visits + 1),
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=118 title='Regresión Lineal vs. Poisson'>
+        data-slide=118 title='Exponenciar los coeficientes'>
          118
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=119 title='Diferencias Multiplicativas'>
+        data-slide=119 title='Regresión Lineal vs. Poisson'>
          119
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=120 title='Regresión Poisson en R'>
+        data-slide=120 title='Diferencias Multiplicativas'>
          120
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=121 title='Relación media-varianza ?'>
+        data-slide=121 title='Regresión Poisson en R'>
          121
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=122 title='Tasas'>
+        data-slide=122 title='Relación media-varianza ?'>
          122
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=123 title='Ajustando tasas en R'>
+        data-slide=123 title='Tasas'>
          123
       </a>
     </li>
@@ -3398,8 +3680,92 @@ lines(julian(gaData$date),glm2$fitted/(gaData$visits + 1),
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=125 title='NA'>
+        data-slide=125 title='Ajustando tasas en R'>
          125
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=126 title='Árboles de decisión'>
+         126
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=127 title='Ejemplo'>
+         127
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=128 title='Algoritmo'>
+         128
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=129 title='Medidas de &quot;Impureza&quot;'>
+         129
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=130 title='Medidas de &quot;Impureza&quot;'>
+         130
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=131 title='Medidas de &quot;Impureza&quot;'>
+         131
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=132 title='Ejemplo: Iris Data'>
+         132
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=133 title='Conjuntos training y test'>
+         133
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=134 title='Iris petal widths/sepal width'>
+         134
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=135 title='Iris petal widths/sepal width'>
+         135
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=136 title='Gráfico tree'>
+         136
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=137 title='Gráfico tree'>
+         137
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=138 title='Predicciones'>
+         138
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=139 title='NA'>
+         139
       </a>
     </li>
   </ul>
