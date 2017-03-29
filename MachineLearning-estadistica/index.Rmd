@@ -1862,3 +1862,206 @@ predict(modFit,newdata=testing)
 ```
 
 ---
+
+## Bootstrap aggregating (bagging)
+
+__Basic idea__: 
+
+1. Volver a muestrear casos y volver a calcular predicciones
+2. Voto promedio o mayoritario
+
+__Notes__:
+
+- Sesgo similar
+- Variación reducida
+- Más útil para funciones no lineales
+
+
+---
+
+## Datos Ozone 
+
+```{r ozoneData, cache=TRUE}
+suppressMessages(suppressWarnings(library(ElemStatLearn)))
+data(ozone,package = "ElemStatLearn")
+ozone <- ozone[order(ozone$ozone),]
+head(ozone)
+```
+[http://en.wikipedia.org/wiki/Bootstrap_aggregating](http://en.wikipedia.org/wiki/Bootstrap_aggregating)
+
+
+---
+
+## Bagged loess
+
+```{r baggedOzone, dependson="ozoneData",cache=TRUE}
+ll <- matrix(NA, nrow = 10, ncol = 155)
+for (i in 1:10) {
+  ss <- sample(1:dim(ozone)[1],replace = T)
+  ozone0 <- ozone[ss,]; ozone0 <- ozone0[order(ozone0$ozone),]
+  loess0 <- loess(temperature ~ ozone,data = ozone0,span = 0.2)
+  ll[i,] <- predict(loess0,newdata = data.frame(ozone = 1:155))
+}
+```
+
+---
+
+## Bagged loess
+
+```{r, dependson="baggedOzone",fig.height=4,fig.width=6, fig.align='center'}
+plot(ozone$ozone,ozone$temperature,pch = 19, cex = 0.5)
+for(i in 1:10) {lines(1:155,ll[i,], col = "grey",lwd = 2)}
+lines(1:155, apply(ll, 2, mean), col = "red", lwd = 2)
+```
+
+
+---
+
+## Bagging en caret
+
+- Algunos modelos que hacen bagging, en `train` considere las funciones en la opción `method`  
+    - `bagEarth` 
+    - `treebag`
+    - `bagFDA`
+- Alternativamente, puedes cargar cualquier modelo que elijas usando la función  `bag`
+
+---
+
+## Más bagging en caret
+
+```{r bag1}
+suppressMessages(suppressWarnings(library(caret)))
+predictors = data.frame(ozone=ozone$ozone)
+temperature = ozone$temperature
+treebag <- bag(predictors, temperature, B = 10,
+                bagControl = bagControl(fit = ctreeBag$fit,
+                                        predict = ctreeBag$pred,
+                                        aggregate = ctreeBag$aggregate))
+```
+
+http://www.inside-r.org/packages/cran/caret/docs/nbBag
+
+
+---
+
+## Eejemplo de bagging (continuación)
+
+```{r,dependson="bag1",fig.height=4,fig.width=6, fig.align='center'}
+plot(ozone$ozone,temperature,col = 'lightgrey',pch=19)
+points(ozone$ozone,predict(treebag$fits[[1]]$fit,predictors), pch = 19, col = "red")
+points(ozone$ozone,predict(treebag,predictors),pch=19,col="blue")
+```
+
+
+---
+
+## Partes del bagging
+
+```{r}
+ctreeBag$fit
+```
+
+---
+
+## Partes del bagging
+
+```{r}
+ctreeBag$pred
+```
+
+
+---
+
+## Partes del bagging
+
+```{r}
+ctreeBag$aggregate
+```
+
+
+---
+
+## _Random forests_ - Bosques aleatorios  
+
+1. Muestras Bootstrap 
+2. En cada división, las variables bootstrap 
+3. Contruir árboles múltiples y escoger
+__Pros__:
+
+1. Precisión
+
+__Cons__:
+
+1. Velocidad
+2. Interpretabilidad
+3. Sobreajuste
+
+
+---
+
+## _Random forests_ - Bosques aleatorios  
+
+<center>![](assets/img/rf.png)</center>
+
+---
+
+## Datos Iris 
+
+```{r iris1, cache=TRUE}
+data(iris); 
+suppressMessages(suppressWarnings(library(ggplot2)))
+inTrain <- createDataPartition(y=iris$Species,
+                              p=0.7, list=FALSE)
+training <- iris[inTrain,]
+testing <- iris[-inTrain,]
+```
+
+
+---
+
+## Random forests
+
+```{r forestIris, dependson="irisData",fig.height=4,fig.width=4,cache=TRUE}
+suppressMessages(suppressWarnings(library(caret)))
+modFit <- train(Species~ .,data = training, method = "rf",prox=TRUE)
+modFit
+```
+
+---
+
+## Obteniendo un árbol 
+
+```{r , dependson="forestIris",fig.height=4,fig.width=4}
+getTree(modFit$finalModel,k=2)
+```
+
+---
+
+## Clase "centers"
+
+```{r centers, dependson="forestIris",fig.height=4,fig.width=6, fig.align='center'}
+irisP <- classCenter(training[,c(3,4)], training$Species, modFit$finalModel$prox)
+irisP <- as.data.frame(irisP); irisP$Species <- rownames(irisP)
+p <- qplot(Petal.Width, Petal.Length, col=Species,data=training)
+p + geom_point(aes(x=Petal.Width,y=Petal.Length,col=Species),size=5,shape=4,data=irisP)
+```
+
+---
+
+## Predicciones
+
+```{r predForest, dependson="centers",fig.height=4,fig.width=4,cache=TRUE}
+pred <- predict(modFit,testing); testing$predRight <- pred==testing$Species
+table(pred,testing$Species)
+```
+
+---
+
+## Predicciones
+
+```{r, dependson="predForest",fig.height=4,fig.width=6, fig.align='center'}
+qplot(Petal.Width,Petal.Length,colour=predRight,data=testing,main="newdata Predictions")
+```
+
+---
+

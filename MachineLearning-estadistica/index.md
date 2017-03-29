@@ -2154,3 +2154,388 @@ predict(modFit,newdata=testing)
 ```
 
 ---
+
+## Bootstrap aggregating (bagging)
+
+__Basic idea__: 
+
+1. Volver a muestrear casos y volver a calcular predicciones
+2. Voto promedio o mayoritario
+
+__Notes__:
+
+- Sesgo similar
+- Variación reducida
+- Más útil para funciones no lineales
+
+
+---
+
+## Datos Ozone 
+
+
+```r
+suppressMessages(suppressWarnings(library(ElemStatLearn)))
+data(ozone,package = "ElemStatLearn")
+ozone <- ozone[order(ozone$ozone),]
+head(ozone)
+```
+
+```
+##     ozone radiation temperature wind
+## 17      1         8          59  9.7
+## 19      4        25          61  9.7
+## 14      6        78          57 18.4
+## 45      7        48          80 14.3
+## 106     7        49          69 10.3
+## 7       8        19          61 20.1
+```
+[http://en.wikipedia.org/wiki/Bootstrap_aggregating](http://en.wikipedia.org/wiki/Bootstrap_aggregating)
+
+
+---
+
+## Bagged loess
+
+
+```r
+ll <- matrix(NA, nrow = 10, ncol = 155)
+for (i in 1:10) {
+  ss <- sample(1:dim(ozone)[1],replace = T)
+  ozone0 <- ozone[ss,]; ozone0 <- ozone0[order(ozone0$ozone),]
+  loess0 <- loess(temperature ~ ozone,data = ozone0,span = 0.2)
+  ll[i,] <- predict(loess0,newdata = data.frame(ozone = 1:155))
+}
+```
+
+```
+## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
+## parametric, : pseudoinverse used at 14
+```
+
+```
+## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
+## parametric, : neighborhood radius 2
+```
+
+```
+## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
+## parametric, : reciprocal condition number 9.6132e-17
+```
+
+---
+
+## Bagged loess
+
+
+```r
+plot(ozone$ozone,ozone$temperature,pch = 19, cex = 0.5)
+for(i in 1:10) {lines(1:155,ll[i,], col = "grey",lwd = 2)}
+lines(1:155, apply(ll, 2, mean), col = "red", lwd = 2)
+```
+
+<img src="assets/fig/unnamed-chunk-28-1.png" title="plot of chunk unnamed-chunk-28" alt="plot of chunk unnamed-chunk-28" style="display: block; margin: auto;" />
+
+
+---
+
+## Bagging en caret
+
+- Algunos modelos que hacen bagging, en `train` considere las funciones en la opción `method`  
+    - `bagEarth` 
+    - `treebag`
+    - `bagFDA`
+- Alternativamente, puedes cargar cualquier modelo que elijas usando la función  `bag`
+
+---
+
+## Más bagging en caret
+
+
+```r
+suppressMessages(suppressWarnings(library(caret)))
+predictors = data.frame(ozone=ozone$ozone)
+temperature = ozone$temperature
+treebag <- bag(predictors, temperature, B = 10,
+                bagControl = bagControl(fit = ctreeBag$fit,
+                                        predict = ctreeBag$pred,
+                                        aggregate = ctreeBag$aggregate))
+```
+
+```
+## Warning: executing %dopar% sequentially: no parallel backend registered
+```
+
+http://www.inside-r.org/packages/cran/caret/docs/nbBag
+
+
+---
+
+## Eejemplo de bagging (continuación)
+
+
+```r
+plot(ozone$ozone,temperature,col = 'lightgrey',pch=19)
+points(ozone$ozone,predict(treebag$fits[[1]]$fit,predictors), pch = 19, col = "red")
+points(ozone$ozone,predict(treebag,predictors),pch=19,col="blue")
+```
+
+<img src="assets/fig/unnamed-chunk-29-1.png" title="plot of chunk unnamed-chunk-29" alt="plot of chunk unnamed-chunk-29" style="display: block; margin: auto;" />
+
+
+---
+
+## Partes del bagging
+
+
+```r
+ctreeBag$fit
+```
+
+```
+## function (x, y, ...) 
+## {
+##     loadNamespace("party")
+##     data <- as.data.frame(x)
+##     data$y <- y
+##     party::ctree(y ~ ., data = data)
+## }
+## <environment: namespace:caret>
+```
+
+---
+
+## Partes del bagging
+
+
+```r
+ctreeBag$pred
+```
+
+```
+## function (object, x) 
+## {
+##     if (!is.data.frame(x)) 
+##         x <- as.data.frame(x)
+##     obsLevels <- levels(object@data@get("response")[, 1])
+##     if (!is.null(obsLevels)) {
+##         rawProbs <- party::treeresponse(object, x)
+##         probMatrix <- matrix(unlist(rawProbs), ncol = length(obsLevels), 
+##             byrow = TRUE)
+##         out <- data.frame(probMatrix)
+##         colnames(out) <- obsLevels
+##         rownames(out) <- NULL
+##     }
+##     else out <- unlist(party::treeresponse(object, x))
+##     out
+## }
+## <environment: namespace:caret>
+```
+
+
+---
+
+## Partes del bagging
+
+
+```r
+ctreeBag$aggregate
+```
+
+```
+## function (x, type = "class") 
+## {
+##     if (is.matrix(x[[1]]) | is.data.frame(x[[1]])) {
+##         pooled <- x[[1]] & NA
+##         classes <- colnames(pooled)
+##         for (i in 1:ncol(pooled)) {
+##             tmp <- lapply(x, function(y, col) y[, col], col = i)
+##             tmp <- do.call("rbind", tmp)
+##             pooled[, i] <- apply(tmp, 2, median)
+##         }
+##         if (type == "class") {
+##             out <- factor(classes[apply(pooled, 1, which.max)], 
+##                 levels = classes)
+##         }
+##         else out <- as.data.frame(pooled)
+##     }
+##     else {
+##         x <- matrix(unlist(x), ncol = length(x))
+##         out <- apply(x, 1, median)
+##     }
+##     out
+## }
+## <environment: namespace:caret>
+```
+
+
+---
+
+## _Random forests_ - Bosques aleatorios  
+
+1. Muestras Bootstrap 
+2. En cada división, las variables bootstrap 
+3. Contruir árboles múltiples y escoger
+__Pros__:
+
+1. Precisión
+
+__Cons__:
+
+1. Velocidad
+2. Interpretabilidad
+3. Sobreajuste
+
+
+---
+
+## _Random forests_ - Bosques aleatorios  
+
+<center>![](assets/img/rf.png)</center>
+
+---
+
+## Datos Iris 
+
+
+```r
+data(iris); 
+suppressMessages(suppressWarnings(library(ggplot2)))
+inTrain <- createDataPartition(y=iris$Species,
+                              p=0.7, list=FALSE)
+training <- iris[inTrain,]
+testing <- iris[-inTrain,]
+```
+
+
+---
+
+## Random forests
+
+
+```r
+suppressMessages(suppressWarnings(library(caret)))
+modFit <- train(Species~ .,data = training, method = "rf",prox=TRUE)
+```
+
+```
+## Loading required package: randomForest
+```
+
+```
+## randomForest 4.6-12
+```
+
+```
+## Type rfNews() to see new features/changes/bug fixes.
+```
+
+```
+## 
+## Attaching package: 'randomForest'
+```
+
+```
+## The following object is masked from 'package:Hmisc':
+## 
+##     combine
+```
+
+```
+## The following object is masked from 'package:ggplot2':
+## 
+##     margin
+```
+
+```r
+modFit
+```
+
+```
+## Random Forest 
+## 
+## 105 samples
+##   4 predictor
+##   3 classes: 'setosa', 'versicolor', 'virginica' 
+## 
+## No pre-processing
+## Resampling: Bootstrapped (25 reps) 
+## Summary of sample sizes: 105, 105, 105, 105, 105, 105, ... 
+## Resampling results across tuning parameters:
+## 
+##   mtry  Accuracy   Kappa    
+##   2     0.9314502  0.8959701
+##   3     0.9335846  0.8992387
+##   4     0.9285176  0.8916327
+## 
+## Accuracy was used to select the optimal model using  the largest value.
+## The final value used for the model was mtry = 3.
+```
+
+---
+
+## Obteniendo un árbol 
+
+
+```r
+getTree(modFit$finalModel,k=2)
+```
+
+```
+##   left daughter right daughter split var split point status prediction
+## 1             2              3         4        0.75      1          0
+## 2             0              0         0        0.00     -1          1
+## 3             4              5         3        5.15      1          0
+## 4             6              7         4        1.75      1          0
+## 5             0              0         0        0.00     -1          3
+## 6             0              0         0        0.00     -1          2
+## 7             8              9         2        3.10      1          0
+## 8             0              0         0        0.00     -1          3
+## 9             0              0         0        0.00     -1          2
+```
+
+---
+
+## Clase "centers"
+
+
+```r
+irisP <- classCenter(training[,c(3,4)], training$Species, modFit$finalModel$prox)
+irisP <- as.data.frame(irisP); irisP$Species <- rownames(irisP)
+p <- qplot(Petal.Width, Petal.Length, col=Species,data=training)
+p + geom_point(aes(x=Petal.Width,y=Petal.Length,col=Species),size=5,shape=4,data=irisP)
+```
+
+<img src="assets/fig/centers-1.png" title="plot of chunk centers" alt="plot of chunk centers" style="display: block; margin: auto;" />
+
+---
+
+## Predicciones
+
+
+```r
+pred <- predict(modFit,testing); testing$predRight <- pred==testing$Species
+table(pred,testing$Species)
+```
+
+```
+##             
+## pred         setosa versicolor virginica
+##   setosa         15          0         0
+##   versicolor      0         15         0
+##   virginica       0          0        15
+```
+
+---
+
+## Predicciones
+
+
+```r
+qplot(Petal.Width,Petal.Length,colour=predRight,data=testing,main="newdata Predictions")
+```
+
+<img src="assets/fig/unnamed-chunk-34-1.png" title="plot of chunk unnamed-chunk-34" alt="plot of chunk unnamed-chunk-34" style="display: block; margin: auto;" />
+
+---
+
