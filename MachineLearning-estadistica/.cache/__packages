@@ -13,3 +13,7 @@ rpart
 rattle
 ElemStatLearn
 randomForest
+ISLR
+gbm
+plyr
+klaR

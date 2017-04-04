@@ -3176,7 +3176,7 @@ points(ozone$ozone,predict(treebag,predictors),pch=19,col=&quot;blue&quot;)
     <ol>
 <li>Muestras Bootstrap </li>
 <li>En cada división, las variables bootstrap </li>
-<li><p>Contruir árboles múltiples y escoger
+<li><p>Construir árboles múltiples y escoger
 <strong>Pros</strong>:</p></li>
 <li><p>Precisión</p></li>
 </ol>
@@ -3356,6 +3356,366 @@ table(pred,testing$Species)
 </slide>
 
 <slide class="" id="slide-157" style="background:;">
+  <hgroup>
+    <h2>Boosting</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>Tomar muchos predictores (posiblemente) débiles</li>
+<li>Añada peso y agrégalas</li>
+<li>Consiga un predictor más fuerte</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-158" style="background:;">
+  <hgroup>
+    <h2>Idea detras de Boosting</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>Comience con un conjunto de clasificadores \(h_1,\ldots,h_k\)
+
+<ul>
+<li>Ejemplos: Todos los posibles <em>trees</em>, Todos los posibles modelos de regresión, Todos los posibles puntos de cortes .</li>
+</ul></li>
+<li>Cree un clasificador que combine funciones de clasificación: \(f(x) = \rm{sgn}\left(\sum_{t=1}^T \alpha_t h_t(x)\right)\).</li>
+</ol>
+
+<pre><code>- La meta es minimizar el error (training)
+- Iterativo, seleccione un $h$ en cada paso
+- Calcular pesos basados en errores
+- Recalcular el peso de clasificaciones y selecciona la siguiente $h$
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-159" style="background:;">
+  <hgroup>
+    <h2>Ejemplo</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/boos1.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-160" style="background:;">
+  <hgroup>
+    <h2>Iteración 1: adaboost</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/boos2.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-161" style="background:;">
+  <hgroup>
+    <h2>Iteración 2 &amp; 3</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/boos3.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-162" style="background:;">
+  <hgroup>
+    <h2>Clasificador completo</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/boos4.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-163" style="background:;">
+  <hgroup>
+    <h2>Ejemplo Wage</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">suppressMessages(suppressWarnings(library(ISLR)))
+suppressMessages(suppressWarnings(library(ggplot2)))
+suppressMessages(suppressWarnings(library(caret)))
+data(Wage)
+Wage &lt;- subset(Wage,select = -c(logwage))
+inTrain &lt;- createDataPartition(y = Wage$wage,
+                              p = 0.7, list = FALSE)
+training &lt;- Wage[inTrain,]; testing &lt;- Wage[-inTrain,]
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-164" style="background:;">
+  <hgroup>
+    <h2>Ajuste del modelo</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">suppressMessages(suppressWarnings( modFit &lt;- train(wage ~ ., method = &quot;gbm&quot;, data = training,
+                verbose = FALSE)))
+print(modFit)
+</code></pre>
+
+<pre><code>## Stochastic Gradient Boosting 
+## 
+## 2102 samples
+##   10 predictor
+## 
+## No pre-processing
+## Resampling: Bootstrapped (25 reps) 
+## Summary of sample sizes: 2102, 2102, 2102, 2102, 2102, 2102, ... 
+## Resampling results across tuning parameters:
+## 
+##   interaction.depth  n.trees  RMSE      Rsquared 
+##   1                   50      33.75478  0.3084619
+##   1                  100      33.20415  0.3175358
+##   1                  150      33.12932  0.3190985
+##   2                   50      33.19342  0.3197553
+##   2                  100      33.02979  0.3230936
+##   2                  150      33.09875  0.3209580
+##   3                   50      33.07416  0.3223431
+##   3                  100      33.12587  0.3197613
+##   3                  150      33.24252  0.3163562
+## 
+## Tuning parameter &#39;shrinkage&#39; was held constant at a value of 0.1
+## 
+## Tuning parameter &#39;n.minobsinnode&#39; was held constant at a value of 10
+## RMSE was used to select the optimal model using  the smallest value.
+## The final values used for the model were n.trees = 100,
+##  interaction.depth = 2, shrinkage = 0.1 and n.minobsinnode = 10.
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-165" style="background:;">
+  <hgroup>
+    <h2>Gráfico resultado</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">qplot(predict(modFit,testing),wage, data = testing)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-36-1.png" title="plot of chunk unnamed-chunk-36" alt="plot of chunk unnamed-chunk-36" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-166" style="background:;">
+  <hgroup>
+    <h2>Modelos basados en predicción</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li>Supongamos que los datos siguen un modelo probabilístico</li>
+<li>Utilice el teorema de Bayes para identificar clasificadores óptimos</li>
+</ol>
+
+<p><strong>Pros:</strong></p>
+
+<ul>
+<li>Toma ventaja de la estructura de los datos </li>
+<li>Puede ser conveniente en términos de computo </li>
+<li>Son razonablemente precisos en problemas reales </li>
+</ul>
+
+<p><strong>Cons:</strong></p>
+
+<ul>
+<li>Realiza supuestos adicionales acerca de los datos </li>
+<li>Cuando el modelo es incorrecto se ve afectada la precisión</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-167" style="background:;">
+  <hgroup>
+    <h2>Enfoque</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li><p>El objetivo es construir modelos parámetricos para distribuciones condicionales \(P(Y = k | X = x)\)</p></li>
+<li><p>Un enfoque tradicional es <a href="http://en.wikipedia.org/wiki/Bayes&#x27;_theorem">Bayes theorem</a>:
+\[ Pr(Y = k | X=x) = \frac{Pr(X=x|Y=k)Pr(Y=k)}{\sum_{\ell=1}^K Pr(X=x |Y = \ell) Pr(Y=\ell)}\]
+\[Pr(Y = k | X=x) = \frac{f_k(x) \pi_k}{\sum_{\ell = 1}^K f_{\ell}(x) \pi_{\ell}}\]</p></li>
+<li><p>Probabilidades típicamente <em>a priori</em> \(\pi_k\) son fijadas de antemano.</p></li>
+<li><p>Una opción común para \(f_k(x) = \frac{1}{\sigma_k \sqrt{2 \pi}}e^{-\frac{(x-\mu_k)^2}{\sigma_k^2}}\), una distribución normal</p></li>
+<li><p>Estimar los parámetros (\(\mu_k\),\(\sigma_k^2\)) de los datos.</p></li>
+<li><p>Clasifique a la clase con el valor más alto de \(P(Y = k | X = x)\)</p></li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-168" style="background:;">
+  <hgroup>
+    <h2>Clasificación</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Una serie de modelos utilizan este enfoque</p>
+
+<ul>
+<li>Análisis discriminante lineal asume \(f_k(x)\) una normal multivariada</li>
+<li>Análisis discriminante lineal asume \(f_k(x)\) una normal multivariada, con diferentes covarianzas </li>
+<li><a href="http://www.stat.washington.edu/mclust/">Predicción basada en modelos</a> 
+Asume versiones más complicadas para la matriz de covarianza</li>
+<li>Naive Bayes asume la independencia entre las características de la construcción de modelos</li>
+</ul>
+
+<p><a href="http://statweb.stanford.edu/%7Etibs/ElemStatLearn/">http://statweb.stanford.edu/~tibs/ElemStatLearn/</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-169" style="background:;">
+  <hgroup>
+    <h2>Por que Análisis discriminante lineal ?</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>\[log \frac{Pr(Y = k | X=x)}{Pr(Y = j | X=x)}\]</p>
+
+<p>\[ = log \frac{f_k(x)}{f_j(x)} + log \frac{\pi_k}{\pi_j}\]</p>
+
+<p>\[ = log \frac{\pi_k}{\pi_j} - \frac{1}{2}(\mu_k^T \Sigma^{-1}\mu_k - \mu_j^T \Sigma^{-1}\mu_j)\]</p>
+
+<p>\[ + x^T \Sigma^{-1} (\mu_k - \mu_j)\]</p>
+
+<p><a href="http://statweb.stanford.edu/%7Etibs/ElemStatLearn/">http://statweb.stanford.edu/~tibs/ElemStatLearn/</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-170" style="background:;">
+  <hgroup>
+    <h2>Límites de decisión</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/limites.png" alt=""></center></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-171" style="background:;">
+  <hgroup>
+    <h2>Función Discriminante</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>\[\delta_k(x) = x^T \Sigma^{-1} \mu_k - \frac{1}{2}\mu_k \Sigma^{-1}\mu_k + log(\mu_k)\]</p>
+
+<ul>
+<li>Decidir sobre la clase basada en \(\hat{Y}(x) = argmax_k \delta_k(x)\)</li>
+<li>Usualmente los parámetros se estiman vía máxima verosimilitud</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-172" style="background:;">
+  <hgroup>
+    <h2>Naive Bayes</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Supongamos que tenemos muchos predictores, queremos modelar: \(P(Y = k | X_1,\ldots,X_m)\)</p>
+
+<p>Podemos utilizar el teorema de bayes:</p>
+
+<p>\[P(Y = k | X_1,\ldots,X_m) = \frac{\pi_k P(X_1,\ldots,X_m| Y=k)}{\sum_{\ell = 1}^K P(X_1,\ldots,X_m | Y=k) \pi_{\ell}}\]
+\[ \propto \pi_k P(X_1,\ldots,X_m| Y=k)\]</p>
+
+<p>Esto puede ser escrito:</p>
+
+<p>\[P(X_1,\ldots,X_m, Y=k) = \pi_k P(X_1 | Y = k)P(X_2,\ldots,X_m | X_1,Y=k)\]
+\[ = \pi_k P(X_1 | Y = k) P(X_2 | X_1, Y=k) P(X_3,\ldots,X_m | X_1,X_2, Y=k)\]
+\[ = \pi_k P(X_1 | Y = k) P(X_2 | X_1, Y=k)\ldots P(X_m|X_1\ldots,X_{m-1},Y=k)\]</p>
+
+<p>Podríamos hacer una suposición para escribir esto:</p>
+
+<p>\[ \approx \pi_k P(X_1 | Y = k) P(X_2 | Y = k)\ldots P(X_m |,Y=k)\]</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-173" style="background:;">
+  <hgroup>
+    <h2>Creando conjuntos training y test</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">data(iris)
+inTrain &lt;- createDataPartition(y = iris$Species,
+                              p = 0.7, list = FALSE)
+training &lt;- iris[inTrain,]
+testing &lt;- iris[-inTrain,]
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-174" style="background:;">
+  <hgroup>
+    <h2>Predicciones</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">modlda = train(Species ~ .,data = training, method = &quot;lda&quot;)
+modnb = train(Species ~ ., data = training,method = &quot;nb&quot;)
+</code></pre>
+
+<pre><code>## Loading required package: klaR
+</code></pre>
+
+<pre><code class="r">plda = predict(modlda,testing); pnb = predict(modnb,testing)
+table(plda,pnb)
+</code></pre>
+
+<pre><code>##             pnb
+## plda         setosa versicolor virginica
+##   setosa         15          0         0
+##   versicolor      0         14         0
+##   virginica       0          2        14
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-175" style="background:;">
+  <hgroup>
+    <h2>Comparación de resultados</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">equalPredictions = (plda == pnb)
+qplot(Petal.Width, Sepal.Width, colour = equalPredictions,
+      data = testing)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-39-1.png" title="plot of chunk unnamed-chunk-39" alt="plot of chunk unnamed-chunk-39" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-176" style="background:;">
   <article data-timings="">
     
   </article>
@@ -4304,8 +4664,122 @@ table(pred,testing$Species)
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=157 title='NA'>
+        data-slide=157 title='Boosting'>
          157
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=158 title='Idea detras de Boosting'>
+         158
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=159 title='Ejemplo'>
+         159
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=160 title='Iteración 1: adaboost'>
+         160
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=161 title='Iteración 2 &amp; 3'>
+         161
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=162 title='Clasificador completo'>
+         162
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=163 title='Ejemplo Wage'>
+         163
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=164 title='Ajuste del modelo'>
+         164
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=165 title='Gráfico resultado'>
+         165
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=166 title='Modelos basados en predicción'>
+         166
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=167 title='Enfoque'>
+         167
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=168 title='Clasificación'>
+         168
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=169 title='Por que Análisis discriminante lineal ?'>
+         169
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=170 title='Límites de decisión'>
+         170
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=171 title='Función Discriminante'>
+         171
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=172 title='Naive Bayes'>
+         172
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=173 title='Creando conjuntos training y test'>
+         173
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=174 title='Predicciones'>
+         174
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=175 title='Comparación de resultados'>
+         175
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=176 title='NA'>
+         176
       </a>
     </li>
   </ul>

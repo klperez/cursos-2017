@@ -2375,7 +2375,7 @@ ctreeBag$aggregate
 
 1. Muestras Bootstrap 
 2. En cada división, las variables bootstrap 
-3. Contruir árboles múltiples y escoger
+3. Construir árboles múltiples y escoger
 __Pros__:
 
 1. Precisión
@@ -2536,6 +2536,284 @@ qplot(Petal.Width,Petal.Length,colour=predRight,data=testing,main="newdata Predi
 ```
 
 <img src="assets/fig/unnamed-chunk-34-1.png" title="plot of chunk unnamed-chunk-34" alt="plot of chunk unnamed-chunk-34" style="display: block; margin: auto;" />
+
+---
+
+
+## Boosting 
+
+1. Tomar muchos predictores (posiblemente) débiles
+2. Añada peso y agrégalas
+3. Consiga un predictor más fuerte
+
+
+---
+
+## Idea detras de Boosting 
+
+1. Comience con un conjunto de clasificadores $h_1,\ldots,h_k$
+    - Ejemplos: Todos los posibles _trees_, Todos los posibles modelos de regresión, Todos los posibles puntos de cortes .
+2. Cree un clasificador que combine funciones de clasificación: $f(x) = \rm{sgn}\left(\sum_{t=1}^T \alpha_t h_t(x)\right)$.
+
+
+    - La meta es minimizar el error (training)
+    - Iterativo, seleccione un $h$ en cada paso
+    - Calcular pesos basados en errores
+    - Recalcular el peso de clasificaciones y selecciona la siguiente $h$
+
+
+---
+
+
+## Ejemplo 
+
+<center>![](assets/img/boos1.png)</center>
+
+---
+
+## Iteración 1: adaboost
+
+<center>![](assets/img/boos2.png)</center>
+
+---
+
+## Iteración 2 & 3
+
+<center>![](assets/img/boos3.png)</center>
+
+---
+
+## Clasificador completo
+
+<center>![](assets/img/boos4.png)</center>
+
+---
+
+## Ejemplo Wage
+
+
+```r
+suppressMessages(suppressWarnings(library(ISLR)))
+suppressMessages(suppressWarnings(library(ggplot2)))
+suppressMessages(suppressWarnings(library(caret)))
+data(Wage)
+Wage <- subset(Wage,select = -c(logwage))
+inTrain <- createDataPartition(y = Wage$wage,
+                              p = 0.7, list = FALSE)
+training <- Wage[inTrain,]; testing <- Wage[-inTrain,]
+```
+
+
+---
+
+## Ajuste del modelo
+
+
+```r
+suppressMessages(suppressWarnings( modFit <- train(wage ~ ., method = "gbm", data = training,
+                verbose = FALSE)))
+print(modFit)
+```
+
+```
+## Stochastic Gradient Boosting 
+## 
+## 2102 samples
+##   10 predictor
+## 
+## No pre-processing
+## Resampling: Bootstrapped (25 reps) 
+## Summary of sample sizes: 2102, 2102, 2102, 2102, 2102, 2102, ... 
+## Resampling results across tuning parameters:
+## 
+##   interaction.depth  n.trees  RMSE      Rsquared 
+##   1                   50      33.75478  0.3084619
+##   1                  100      33.20415  0.3175358
+##   1                  150      33.12932  0.3190985
+##   2                   50      33.19342  0.3197553
+##   2                  100      33.02979  0.3230936
+##   2                  150      33.09875  0.3209580
+##   3                   50      33.07416  0.3223431
+##   3                  100      33.12587  0.3197613
+##   3                  150      33.24252  0.3163562
+## 
+## Tuning parameter 'shrinkage' was held constant at a value of 0.1
+## 
+## Tuning parameter 'n.minobsinnode' was held constant at a value of 10
+## RMSE was used to select the optimal model using  the smallest value.
+## The final values used for the model were n.trees = 100,
+##  interaction.depth = 2, shrinkage = 0.1 and n.minobsinnode = 10.
+```
+
+---
+
+## Gráfico resultado
+
+
+```r
+qplot(predict(modFit,testing),wage, data = testing)
+```
+
+<img src="assets/fig/unnamed-chunk-36-1.png" title="plot of chunk unnamed-chunk-36" alt="plot of chunk unnamed-chunk-36" style="display: block; margin: auto;" />
+
+---
+
+
+## Modelos basados en predicción 
+
+1. Supongamos que los datos siguen un modelo probabilístico
+2. Utilice el teorema de Bayes para identificar clasificadores óptimos
+
+__Pros:__
+
+- Toma ventaja de la estructura de los datos 
+- Puede ser conveniente en términos de computo 
+- Son razonablemente precisos en problemas reales 
+
+__Cons:__
+
+- Realiza supuestos adicionales acerca de los datos 
+- Cuando el modelo es incorrecto se ve afectada la precisión
+
+---
+
+## Enfoque 
+
+
+1. El objetivo es construir modelos parámetricos para distribuciones condicionales $P(Y = k | X = x)$
+
+2. Un enfoque tradicional es [Bayes theorem](http://en.wikipedia.org/wiki/Bayes'_theorem):
+$$ Pr(Y = k | X=x) = \frac{Pr(X=x|Y=k)Pr(Y=k)}{\sum_{\ell=1}^K Pr(X=x |Y = \ell) Pr(Y=\ell)}$$
+$$Pr(Y = k | X=x) = \frac{f_k(x) \pi_k}{\sum_{\ell = 1}^K f_{\ell}(x) \pi_{\ell}}$$
+
+3. Probabilidades típicamente _a priori_ $\pi_k$ son fijadas de antemano.
+
+4. Una opción común para $f_k(x) = \frac{1}{\sigma_k \sqrt{2 \pi}}e^{-\frac{(x-\mu_k)^2}{\sigma_k^2}}$, una distribución normal
+
+5. Estimar los parámetros ($\mu_k$,$\sigma_k^2$) de los datos.
+
+6. Clasifique a la clase con el valor más alto de $P(Y = k | X = x)$
+
+---
+
+## Clasificación
+
+Una serie de modelos utilizan este enfoque
+
+- Análisis discriminante lineal asume $f_k(x)$ una normal multivariada
+- Análisis discriminante lineal asume $f_k(x)$ una normal multivariada, con diferentes covarianzas 
+- [Predicción basada en modelos](http://www.stat.washington.edu/mclust/) 
+Asume versiones más complicadas para la matriz de covarianza
+- Naive Bayes asume la independencia entre las características de la construcción de modelos
+
+http://statweb.stanford.edu/~tibs/ElemStatLearn/
+
+
+--- 
+
+## Por que Análisis discriminante lineal ?
+
+$$log \frac{Pr(Y = k | X=x)}{Pr(Y = j | X=x)}$$
+
+$$ = log \frac{f_k(x)}{f_j(x)} + log \frac{\pi_k}{\pi_j}$$
+
+$$ = log \frac{\pi_k}{\pi_j} - \frac{1}{2}(\mu_k^T \Sigma^{-1}\mu_k - \mu_j^T \Sigma^{-1}\mu_j)$$
+
+$$ + x^T \Sigma^{-1} (\mu_k - \mu_j)$$
+
+http://statweb.stanford.edu/~tibs/ElemStatLearn/
+
+
+---
+
+## Límites de decisión
+
+<center>![](assets/img/limites.png)</center>
+
+---
+
+## Función Discriminante 
+
+$$\delta_k(x) = x^T \Sigma^{-1} \mu_k - \frac{1}{2}\mu_k \Sigma^{-1}\mu_k + log(\mu_k)$$
+
+
+- Decidir sobre la clase basada en $\hat{Y}(x) = argmax_k \delta_k(x)$
+- Usualmente los parámetros se estiman vía máxima verosimilitud
+
+---
+
+## Naive Bayes
+
+Supongamos que tenemos muchos predictores, queremos modelar: $P(Y = k | X_1,\ldots,X_m)$
+
+Podemos utilizar el teorema de bayes:
+
+$$P(Y = k | X_1,\ldots,X_m) = \frac{\pi_k P(X_1,\ldots,X_m| Y=k)}{\sum_{\ell = 1}^K P(X_1,\ldots,X_m | Y=k) \pi_{\ell}}$$
+$$ \propto \pi_k P(X_1,\ldots,X_m| Y=k)$$
+
+Esto puede ser escrito:
+
+$$P(X_1,\ldots,X_m, Y=k) = \pi_k P(X_1 | Y = k)P(X_2,\ldots,X_m | X_1,Y=k)$$
+$$ = \pi_k P(X_1 | Y = k) P(X_2 | X_1, Y=k) P(X_3,\ldots,X_m | X_1,X_2, Y=k)$$
+$$ = \pi_k P(X_1 | Y = k) P(X_2 | X_1, Y=k)\ldots P(X_m|X_1\ldots,X_{m-1},Y=k)$$
+
+Podríamos hacer una suposición para escribir esto:
+
+$$ \approx \pi_k P(X_1 | Y = k) P(X_2 | Y = k)\ldots P(X_m |,Y=k)$$
+
+---
+
+## Creando conjuntos training y test 
+
+
+```r
+data(iris)
+inTrain <- createDataPartition(y = iris$Species,
+                              p = 0.7, list = FALSE)
+training <- iris[inTrain,]
+testing <- iris[-inTrain,]
+```
+
+---
+
+## Predicciones 
+
+
+```r
+modlda = train(Species ~ .,data = training, method = "lda")
+modnb = train(Species ~ ., data = training,method = "nb")
+```
+
+```
+## Loading required package: klaR
+```
+
+```r
+plda = predict(modlda,testing); pnb = predict(modnb,testing)
+table(plda,pnb)
+```
+
+```
+##             pnb
+## plda         setosa versicolor virginica
+##   setosa         15          0         0
+##   versicolor      0         14         0
+##   virginica       0          2        14
+```
+
+
+---
+
+## Comparación de resultados
+
+
+```r
+equalPredictions = (plda == pnb)
+qplot(Petal.Width, Sepal.Width, colour = equalPredictions,
+      data = testing)
+```
+
+<img src="assets/fig/unnamed-chunk-39-1.png" title="plot of chunk unnamed-chunk-39" alt="plot of chunk unnamed-chunk-39" style="display: block; margin: auto;" />
 
 ---
 
