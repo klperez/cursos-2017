@@ -2817,3 +2817,342 @@ qplot(Petal.Width, Sepal.Width, colour = equalPredictions,
 
 ---
 
+
+## Predicción no supervisada 
+
+- Algunas veces como analista no sabes cual es tu variable respuesta (etiquetas)
+
+- Construir un predictor 
+
+    - Crear cluster 
+    - Nombrar los cluster 
+    - Construir predictores para los cluster 
+    
+- En un nuevo conjunto de datos 
+
+    - Predecir los cluster 
+
+--- 
+
+
+## Ejemplo Iris ignorando las `Species` 
+
+
+```r
+suppressMessages(suppressWarnings(library(ggplot2)))
+suppressMessages(suppressWarnings(library(caret)))
+data(iris)
+inTrain <- createDataPartition(y = iris$Species,
+                               p = 0.7, list = FALSE)
+training <- iris[inTrain,]
+testing <- iris[-inTrain,]
+dim(training); dim(testing)
+```
+
+```
+## [1] 105   5
+```
+
+```
+## [1] 45  5
+```
+
+---
+
+## Cluster con `k-means`
+
+
+```r
+kMeans1 <- kmeans(subset(training,select = -c(Species)), centers = 3)
+training$clusters <- as.factor(kMeans1$cluster)
+qplot(Petal.Width, Petal.Length, colour = clusters, data = training)
+```
+
+<img src="assets/fig/unnamed-chunk-41-1.png" title="plot of chunk unnamed-chunk-41" alt="plot of chunk unnamed-chunk-41" style="display: block; margin: auto;" />
+
+
+---
+
+## Comparando con valores reales 
+
+
+```r
+table(kMeans1$cluster,training$Species)
+```
+
+```
+##    
+##     setosa versicolor virginica
+##   1      0          2        25
+##   2      0         33        10
+##   3     35          0         0
+```
+
+
+---
+
+## Construcción del predictor
+
+
+```r
+modFit <- train(clusters~.,
+                data = subset(training,
+                            select = -c(Species)), method = "rpart")
+table(predict(modFit,training),training$Species)
+```
+
+```
+##    
+##     setosa versicolor virginica
+##   1      0          0        23
+##   2      0         35        12
+##   3     35          0         0
+```
+
+---
+
+## Aplicando en el `test`
+
+
+```r
+testClusterPred <- predict(modFit, testing) 
+table(testClusterPred, testing$Species)
+```
+
+```
+##                
+## testClusterPred setosa versicolor virginica
+##               1      0          0        11
+##               2      0         15         4
+##               3     15          0         0
+```
+
+
+---
+
+## Combinando predictores 
+
+- Puedes combinar clasificadores promediando/escogiendo
+- La combinación de clasificadores mejora la precisión
+- La combinación de clasificadores reduce la interpretabilidad
+- `Boosting`, `bagging`, y `random forests` son variantes de este tema
+
+---
+
+## `Netflix prize`
+
+BellKor = Combinación de 107 predictores  
+
+<center>![](assets/img/netflix.png)</center>
+
+[http://www.netflixprize.com//leaderboard](http://www.netflixprize.com//leaderboard)
+
+---
+
+## Conceptos básicos 
+
+Suponga que tenemos 5 clasificadores completamente independientes 
+
+Si la precisión es del 70% para cada uno:
+    
+    - $10\times(0.7)^3(0.3)^2 + 5\times(0.7)^4(0.3)^2 + (0.7)^5$
+    - 83.7% precisión de la escogencia mayoritaria 
+
+Con 101 
+
+    - 99.9% precisión de la escogencia mayoritaria 
+
+---
+
+
+## Enfoques para combinar predictores 
+
+1. `Bagging`, `boosting`, `random forests`
+
+    - Normalmente combinan clasificadores similares
+
+2. Combinación de diferentes clasificadores
+
+    - `Model stacking`
+    - `Model ensembling`
+
+---
+
+## Ejemplo con  `Wage` 
+
+
+```r
+suppressMessages(suppressWarnings(library(ISLR)))
+suppressMessages(suppressWarnings(library(ggplot2)))
+suppressMessages(suppressWarnings(library(caret)))
+data(Wage) 
+Wage <- subset(Wage, select = -c(logwage))
+
+inBuild <- createDataPartition(y = Wage$wage,
+                               p = 0.7, list = FALSE)
+validation <- Wage[-inBuild,]; buildData <- Wage[inBuild,]
+
+inTrain <- createDataPartition(y = buildData$wage,
+                               p = 0.7, list = FALSE)
+training <- buildData[inTrain,]; testing <- buildData[-inTrain,]
+```
+
+---
+
+
+## Contruyendo dos modelos 
+
+
+```r
+mod1 <- suppressMessages(suppressWarnings(
+    train(wage ~., method = "glm", data = training)
+    ))
+
+mod2 <- suppressMessages( suppressWarnings( train(wage ~., method = "rf",
+              data = training, 
+              trControl = trainControl(method = "cv"), number = 3)
+              ))
+```
+
+---
+
+## Predicciones 
+
+
+```r
+pred1 <- predict(mod1,testing); pred2 <- predict(mod2,testing)
+```
+
+```
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
+## ifelse(type == : prediction from a rank-deficient fit may be misleading
+```
+
+```r
+qplot(pred1, pred2, colour = wage, data = testing)
+```
+
+<img src="assets/fig/unnamed-chunk-47-1.png" title="plot of chunk unnamed-chunk-47" alt="plot of chunk unnamed-chunk-47" style="display: block; margin: auto;" />
+
+
+---
+
+## Ajustando un modelo que combina predictores 
+
+
+```r
+predDF <- data.frame(pred1, pred2, wage = testing$wage)
+combModFit <- train(wage ~., method = "gam", data = predDF)
+```
+
+```
+## Loading required package: mgcv
+```
+
+```
+## Loading required package: nlme
+```
+
+```
+## 
+## Attaching package: 'nlme'
+```
+
+```
+## The following object is masked from 'package:HistData':
+## 
+##     Wheat
+```
+
+```
+## This is mgcv 1.8-17. For overview type 'help("mgcv-package")'.
+```
+
+```r
+combPred <- predict(combModFit,predDF)
+```
+
+
+---
+
+## Calculando los errores 
+
+
+```r
+sqrt(sum((pred1 - testing$wage)^2))
+```
+
+```
+## [1] 900.0146
+```
+
+```r
+sqrt(sum((pred2 - testing$wage)^2))
+```
+
+```
+## [1] 936.7921
+```
+
+```r
+sqrt(sum((combPred - testing$wage)^2))
+```
+
+```
+## [1] 885.7341
+```
+
+
+---
+
+## Predicciones en el conjunto de validación 
+
+
+```r
+pred1V <- predict(mod1,validation); pred2V <- predict(mod2,validation)
+```
+
+```
+## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
+## ifelse(type == : prediction from a rank-deficient fit may be misleading
+```
+
+```r
+predVDF <- data.frame(pred1 = pred1V, pred2 = pred2V)
+combPredV <- predict(combModFit,predVDF)
+```
+
+
+---
+
+
+## Evaluar en la validación
+
+
+```r
+sqrt(sum((pred1V - validation$wage)^2))
+```
+
+```
+## [1] 992.2389
+```
+
+```r
+sqrt(sum((pred2V - validation$wage)^2))
+```
+
+```
+## [1] 1001.23
+```
+
+```r
+sqrt(sum((combPredV - validation$wage)^2))
+```
+
+```
+## [1] 992.7207
+```
+
+
+
+---

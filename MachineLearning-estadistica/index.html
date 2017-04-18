@@ -3716,6 +3716,382 @@ qplot(Petal.Width, Sepal.Width, colour = equalPredictions,
 </slide>
 
 <slide class="" id="slide-176" style="background:;">
+  <hgroup>
+    <h2>Predicción no supervisada</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li><p>Algunas veces como analista no sabes cual es tu variable respuesta (etiquetas)</p></li>
+<li><p>Construir un predictor </p>
+
+<ul>
+<li>Crear cluster </li>
+<li>Nombrar los cluster </li>
+<li>Construir predictores para los cluster </li>
+</ul></li>
+<li><p>En un nuevo conjunto de datos </p>
+
+<ul>
+<li>Predecir los cluster </li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-177" style="background:;">
+  <hgroup>
+    <h2>Ejemplo Iris ignorando las <code>Species</code></h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">suppressMessages(suppressWarnings(library(ggplot2)))
+suppressMessages(suppressWarnings(library(caret)))
+data(iris)
+inTrain &lt;- createDataPartition(y = iris$Species,
+                               p = 0.7, list = FALSE)
+training &lt;- iris[inTrain,]
+testing &lt;- iris[-inTrain,]
+dim(training); dim(testing)
+</code></pre>
+
+<pre><code>## [1] 105   5
+</code></pre>
+
+<pre><code>## [1] 45  5
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-178" style="background:;">
+  <hgroup>
+    <h2>Cluster con <code>k-means</code></h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">kMeans1 &lt;- kmeans(subset(training,select = -c(Species)), centers = 3)
+training$clusters &lt;- as.factor(kMeans1$cluster)
+qplot(Petal.Width, Petal.Length, colour = clusters, data = training)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-41-1.png" title="plot of chunk unnamed-chunk-41" alt="plot of chunk unnamed-chunk-41" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-179" style="background:;">
+  <hgroup>
+    <h2>Comparando con valores reales</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">table(kMeans1$cluster,training$Species)
+</code></pre>
+
+<pre><code>##    
+##     setosa versicolor virginica
+##   1      0          2        25
+##   2      0         33        10
+##   3     35          0         0
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-180" style="background:;">
+  <hgroup>
+    <h2>Construcción del predictor</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">modFit &lt;- train(clusters~.,
+                data = subset(training,
+                            select = -c(Species)), method = &quot;rpart&quot;)
+table(predict(modFit,training),training$Species)
+</code></pre>
+
+<pre><code>##    
+##     setosa versicolor virginica
+##   1      0          0        23
+##   2      0         35        12
+##   3     35          0         0
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-181" style="background:;">
+  <hgroup>
+    <h2>Aplicando en el <code>test</code></h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">testClusterPred &lt;- predict(modFit, testing) 
+table(testClusterPred, testing$Species)
+</code></pre>
+
+<pre><code>##                
+## testClusterPred setosa versicolor virginica
+##               1      0          0        11
+##               2      0         15         4
+##               3     15          0         0
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-182" style="background:;">
+  <hgroup>
+    <h2>Combinando predictores</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Puedes combinar clasificadores promediando/escogiendo</li>
+<li>La combinación de clasificadores mejora la precisión</li>
+<li>La combinación de clasificadores reduce la interpretabilidad</li>
+<li><code>Boosting</code>, <code>bagging</code>, y <code>random forests</code> son variantes de este tema</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-183" style="background:;">
+  <hgroup>
+    <h2><code>Netflix prize</code></h2>
+  </hgroup>
+  <article data-timings="">
+    <p>BellKor = Combinación de 107 predictores  </p>
+
+<p><center><img src="assets/img/netflix.png" alt=""></center></p>
+
+<p><a href="http://www.netflixprize.com//leaderboard">http://www.netflixprize.com//leaderboard</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-184" style="background:;">
+  <hgroup>
+    <h2>Conceptos básicos</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Suponga que tenemos 5 clasificadores completamente independientes </p>
+
+<p>Si la precisión es del 70% para cada uno:</p>
+
+<pre><code>- $10\times(0.7)^3(0.3)^2 + 5\times(0.7)^4(0.3)^2 + (0.7)^5$
+- 83.7% precisión de la escogencia mayoritaria 
+</code></pre>
+
+<p>Con 101 </p>
+
+<pre><code>- 99.9% precisión de la escogencia mayoritaria 
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-185" style="background:;">
+  <hgroup>
+    <h2>Enfoques para combinar predictores</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol>
+<li><code>Bagging</code>, <code>boosting</code>, <code>random forests</code></li>
+</ol>
+
+<pre><code>- Normalmente combinan clasificadores similares
+</code></pre>
+
+<ol>
+<li>Combinación de diferentes clasificadores</li>
+</ol>
+
+<pre><code>- `Model stacking`
+- `Model ensembling`
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-186" style="background:;">
+  <hgroup>
+    <h2>Ejemplo con  <code>Wage</code></h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">suppressMessages(suppressWarnings(library(ISLR)))
+suppressMessages(suppressWarnings(library(ggplot2)))
+suppressMessages(suppressWarnings(library(caret)))
+data(Wage) 
+Wage &lt;- subset(Wage, select = -c(logwage))
+
+inBuild &lt;- createDataPartition(y = Wage$wage,
+                               p = 0.7, list = FALSE)
+validation &lt;- Wage[-inBuild,]; buildData &lt;- Wage[inBuild,]
+
+inTrain &lt;- createDataPartition(y = buildData$wage,
+                               p = 0.7, list = FALSE)
+training &lt;- buildData[inTrain,]; testing &lt;- buildData[-inTrain,]
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-187" style="background:;">
+  <hgroup>
+    <h2>Contruyendo dos modelos</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">mod1 &lt;- suppressMessages(suppressWarnings(
+    train(wage ~., method = &quot;glm&quot;, data = training)
+    ))
+
+mod2 &lt;- suppressMessages( suppressWarnings( train(wage ~., method = &quot;rf&quot;,
+              data = training, 
+              trControl = trainControl(method = &quot;cv&quot;), number = 3)
+              ))
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-188" style="background:;">
+  <hgroup>
+    <h2>Predicciones</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">pred1 &lt;- predict(mod1,testing); pred2 &lt;- predict(mod2,testing)
+</code></pre>
+
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
+## ifelse(type == : prediction from a rank-deficient fit may be misleading
+</code></pre>
+
+<pre><code class="r">qplot(pred1, pred2, colour = wage, data = testing)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-47-1.png" title="plot of chunk unnamed-chunk-47" alt="plot of chunk unnamed-chunk-47" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-189" style="background:;">
+  <hgroup>
+    <h2>Ajustando un modelo que combina predictores</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">predDF &lt;- data.frame(pred1, pred2, wage = testing$wage)
+combModFit &lt;- train(wage ~., method = &quot;gam&quot;, data = predDF)
+</code></pre>
+
+<pre><code>## Loading required package: mgcv
+</code></pre>
+
+<pre><code>## Loading required package: nlme
+</code></pre>
+
+<pre><code>## 
+## Attaching package: &#39;nlme&#39;
+</code></pre>
+
+<pre><code>## The following object is masked from &#39;package:HistData&#39;:
+## 
+##     Wheat
+</code></pre>
+
+<pre><code>## This is mgcv 1.8-17. For overview type &#39;help(&quot;mgcv-package&quot;)&#39;.
+</code></pre>
+
+<pre><code class="r">combPred &lt;- predict(combModFit,predDF)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-190" style="background:;">
+  <hgroup>
+    <h2>Calculando los errores</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">sqrt(sum((pred1 - testing$wage)^2))
+</code></pre>
+
+<pre><code>## [1] 900.0146
+</code></pre>
+
+<pre><code class="r">sqrt(sum((pred2 - testing$wage)^2))
+</code></pre>
+
+<pre><code>## [1] 936.7921
+</code></pre>
+
+<pre><code class="r">sqrt(sum((combPred - testing$wage)^2))
+</code></pre>
+
+<pre><code>## [1] 885.7341
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-191" style="background:;">
+  <hgroup>
+    <h2>Predicciones en el conjunto de validación</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">pred1V &lt;- predict(mod1,validation); pred2V &lt;- predict(mod2,validation)
+</code></pre>
+
+<pre><code>## Warning in predict.lm(object, newdata, se.fit, scale = 1, type =
+## ifelse(type == : prediction from a rank-deficient fit may be misleading
+</code></pre>
+
+<pre><code class="r">predVDF &lt;- data.frame(pred1 = pred1V, pred2 = pred2V)
+combPredV &lt;- predict(combModFit,predVDF)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-192" style="background:;">
+  <hgroup>
+    <h2>Evaluar en la validación</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">sqrt(sum((pred1V - validation$wage)^2))
+</code></pre>
+
+<pre><code>## [1] 992.2389
+</code></pre>
+
+<pre><code class="r">sqrt(sum((pred2V - validation$wage)^2))
+</code></pre>
+
+<pre><code>## [1] 1001.23
+</code></pre>
+
+<pre><code class="r">sqrt(sum((combPredV - validation$wage)^2))
+</code></pre>
+
+<pre><code>## [1] 992.7207
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-193" style="background:;">
   <article data-timings="">
     
   </article>
@@ -4778,8 +5154,110 @@ qplot(Petal.Width, Sepal.Width, colour = equalPredictions,
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=176 title='NA'>
+        data-slide=176 title='Predicción no supervisada'>
          176
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=177 title='Ejemplo Iris ignorando las <code>Species</code>'>
+         177
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=178 title='Cluster con <code>k-means</code>'>
+         178
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=179 title='Comparando con valores reales'>
+         179
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=180 title='Construcción del predictor'>
+         180
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=181 title='Aplicando en el <code>test</code>'>
+         181
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=182 title='Combinando predictores'>
+         182
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=183 title='<code>Netflix prize</code>'>
+         183
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=184 title='Conceptos básicos'>
+         184
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=185 title='Enfoques para combinar predictores'>
+         185
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=186 title='Ejemplo con  <code>Wage</code>'>
+         186
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=187 title='Contruyendo dos modelos'>
+         187
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=188 title='Predicciones'>
+         188
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=189 title='Ajustando un modelo que combina predictores'>
+         189
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=190 title='Calculando los errores'>
+         190
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=191 title='Predicciones en el conjunto de validación'>
+         191
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=192 title='Evaluar en la validación'>
+         192
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=193 title='NA'>
+         193
       </a>
     </li>
   </ul>

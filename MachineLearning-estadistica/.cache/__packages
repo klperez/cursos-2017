@@ -17,3 +17,5 @@ ISLR
 gbm
 plyr
 klaR
+nlme
+mgcv
