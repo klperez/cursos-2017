@@ -3156,3 +3156,729 @@ sqrt(sum((combPredV - validation$wage)^2))
 
 
 ---
+
+## Matriz de datos 
+
+
+```r
+set.seed(12345); par(mar = rep(0.2,4))
+dataMatrix <- matrix(rnorm(400),nrow = 40)
+image(1:10,1:40,t(dataMatrix)[,nrow(dataMatrix):1])
+```
+
+<img src="assets/fig/randomData-1.png" title="plot of chunk randomData" alt="plot of chunk randomData" style="display: block; margin: auto;" />
+
+---
+
+## Cluster de los datos 
+
+
+```r
+par(mar = rep(0.2,4))
+heatmap(dataMatrix)
+```
+
+<img src="assets/fig/unnamed-chunk-52-1.png" title="plot of chunk unnamed-chunk-52" alt="plot of chunk unnamed-chunk-52" style="display: block; margin: auto;" />
+
+---
+
+## ¿Qué pasa si agregamos un patrón?
+
+
+```r
+set.seed(678910)
+for (i in 1:40) {
+  # flip a coin
+  coinFlip <- rbinom(1,size = 1,prob = 0.5)
+  # if coin is heads add a common pattern to that row
+  if (coinFlip) {
+    dataMatrix[i,] <- dataMatrix[i,] + rep(c(0,3),each = 5)
+  }
+}
+```
+
+
+---
+
+## ¿Qué pasa si agregamos un patrón? - Los datos 
+
+
+```r
+par(mar = rep(0.2,4))
+image(1:10,1:40,t(dataMatrix)[,nrow(dataMatrix):1])
+```
+
+<img src="assets/fig/unnamed-chunk-53-1.png" title="plot of chunk unnamed-chunk-53" alt="plot of chunk unnamed-chunk-53" style="display: block; margin: auto;" />
+
+
+---
+
+## ¿Qué pasa si agregamos un patrón? - El cluster
+
+
+```r
+par(mar = rep(0.2,4))
+heatmap(dataMatrix)
+```
+
+<img src="assets/fig/unnamed-chunk-54-1.png" title="plot of chunk unnamed-chunk-54" alt="plot of chunk unnamed-chunk-54" style="display: block; margin: auto;" />
+
+
+
+---
+
+## Patrones en filas y columnas 
+
+
+
+```r
+hh <- hclust(dist(dataMatrix)); dataMatrixOrdered <- dataMatrix[hh$order,]
+par(mfrow = c(1,3))
+image(t(dataMatrixOrdered)[,nrow(dataMatrixOrdered):1])
+plot(rowMeans(dataMatrixOrdered),40:1,xlab = "Row Mean",
+     ylab = "Row",pch = 19)
+plot(colMeans(dataMatrixOrdered),xlab = "Column",
+     ylab = "Column Mean",pch = 19)
+```
+
+<img src="assets/fig/oChunk-1.png" title="plot of chunk oChunk" alt="plot of chunk oChunk" style="display: block; margin: auto;" />
+
+---
+
+## Problemas relacionados 
+
+Cuando se tienen múltiples variables  $X_1,\ldots,X_n$, así $X_1 = (X_{11},\ldots,X_{1m})$
+
+- Encuentre un nuevo conjunto de variables multivariadas que no estén correlacionadas y explique la mayor varianza posible.
+
+- Si se unen todas las variables en una matriz, encuentra la mejor matriz creada con menos variables (rango inferior) que explica los datos originales.
+
+La meta principal es <font color="#330066"> estadística</font> la segunda meta es <font color="#993300">compresión de los datos </font>.
+
+---
+
+## Soluciones relacionadas - PCA/SVD
+
+__SVD__
+
+Si $X$ es una matriz con cada variable en una columna y cada observación en una fila, entonces la SVD es una "descomposición de la matriz"
+$$ X = UDV^T$$
+
+Donde la columnas de $U$ son ortogonales, las columnas de $V$ son ortogonales  y $D$ es la matriz diagonal (valores singulares). 
+
+__PCA__
+
+Los componentes principales son iguales a los valores singulares si se escala las variables primero.
+
+---
+
+## Componentes de la SVD - $u$ y $v$
+
+
+```r
+svd1 <- svd(scale(dataMatrixOrdered))
+par(mfrow = c(1,3))
+image(t(dataMatrixOrdered)[,nrow(dataMatrixOrdered):1])
+plot(svd1$u[,1],40:1,xlab = "Row",
+     ylab = "First left singular vector", pch = 19)
+plot(svd1$v[,1],xlab = "Column",
+     ylab = "First right singular vector", pch = 19)
+```
+
+<img src="assets/fig/unnamed-chunk-55-1.png" title="plot of chunk unnamed-chunk-55" alt="plot of chunk unnamed-chunk-55" style="display: block; margin: auto;" />
+
+
+---
+
+## Componentes de la SVD - Varianza explicada
+
+
+```r
+par(mfrow = c(1,2))
+plot(svd1$d, xlab = "Column", ylab = "Singular value", pch = 19)
+plot(svd1$d^2/sum(svd1$d^2), xlab = "Column", ylab = "Prop. of variance explained", pch = 19)
+```
+
+<img src="assets/fig/unnamed-chunk-56-1.png" title="plot of chunk unnamed-chunk-56" alt="plot of chunk unnamed-chunk-56" style="display: block; margin: auto;" />
+
+
+---
+
+## Relación con los componentes principales
+
+
+```r
+svd1 <- svd(scale(dataMatrixOrdered))
+pca1 <- prcomp(dataMatrixOrdered, scale = TRUE)
+plot(pca1$rotation[,1],svd1$v[,1], pch = 19, xlab = "Principal Component 1", ylab = "Right Singular Vector 1")
+abline(c(0,1))
+```
+
+<img src="assets/fig/unnamed-chunk-57-1.png" title="plot of chunk unnamed-chunk-57" alt="plot of chunk unnamed-chunk-57" style="display: block; margin: auto;" />
+
+---
+
+## Componentes de la  SVD - Varianza explicada
+
+
+```r
+constantMatrix <- dataMatrixOrdered*0
+for (i in 1:dim(dataMatrixOrdered)[1]) { 
+    constantMatrix[i,] <- rep(c(0,1),each = 5)}
+svd1 <- svd(constantMatrix)
+par(mfrow = c(1,3))
+image(t(constantMatrix)[,nrow(constantMatrix):1])
+plot(svd1$d, xlab = "Column", ylab = "Singular value", pch = 19)
+plot(svd1$d^2/sum(svd1$d^2), xlab = "Column", ylab = "Prop. of variance explained", pch = 19)
+```
+
+<img src="assets/fig/unnamed-chunk-58-1.png" title="plot of chunk unnamed-chunk-58" alt="plot of chunk unnamed-chunk-58" style="display: block; margin: auto;" />
+
+
+---
+
+## ¿Qué pasa si agregamos un patrón?
+
+
+```r
+set.seed(678910)
+for(i in 1:40){
+  # flip a coin
+  coinFlip1 <- rbinom(1, size = 1, prob = 0.5)
+  coinFlip2 <- rbinom(1, size = 1, prob = 0.5)
+  # if coin is heads add a common pattern to that row
+  if(coinFlip1){
+    dataMatrix[i,] <- dataMatrix[i,] + rep(c(0,5),each = 5)
+  }
+  if(coinFlip2){
+    dataMatrix[i,] <- dataMatrix[i,] + rep(c(0,5),5)
+  }
+}
+hh <- hclust(dist(dataMatrix)); dataMatrixOrdered <- dataMatrix[hh$order,]
+```
+
+---
+
+## Descomposición en valores singulares - patrones verdaderos
+
+
+```r
+svd2 <- svd(scale(dataMatrixOrdered))
+par(mfrow = c(1,3))
+image(t(dataMatrixOrdered)[,nrow(dataMatrixOrdered):1])
+plot(rep(c(0,1), each = 5), pch = 19, xlab = "Column",ylab = "Pattern 1")
+plot(rep(c(0,1),5), pch = 19, xlab = "Column", ylab = "Pattern 2")
+```
+
+<img src="assets/fig/unnamed-chunk-59-1.png" title="plot of chunk unnamed-chunk-59" alt="plot of chunk unnamed-chunk-59" style="display: block; margin: auto;" />
+
+---
+
+##  $v$ y patrones de varianza en filas
+
+
+```r
+svd2 <- svd(scale(dataMatrixOrdered))
+par(mfrow = c(1,3))
+image(t(dataMatrixOrdered)[,nrow(dataMatrixOrdered):1])
+plot(svd2$v[,1], pch = 19, xlab = "Column",ylab="First right singular vector")
+plot(svd2$v[,2],pch=19,xlab="Column",ylab="Second right singular vector")
+```
+
+<img src="assets/fig/unnamed-chunk-60-1.png" title="plot of chunk unnamed-chunk-60" alt="plot of chunk unnamed-chunk-60" style="display: block; margin: auto;" />
+
+
+---
+
+##  $d$ y la varianza explicada
+
+
+```r
+svd1 <- svd(scale(dataMatrixOrdered))
+par(mfrow = c(1,2))
+plot(svd1$d,xlab = "Column", ylab = "Singular value", pch = 19)
+plot(svd1$d^2/sum(svd1$d^2), xlab = "Column", 
+     ylab = "Percent of variance explained",pch = 19)
+```
+
+![plot of chunk unnamed-chunk-61](assets/fig/unnamed-chunk-61-1.png)
+
+---
+
+## valores faltantes 
+
+
+```r
+dataMatrix2 <- dataMatrixOrdered
+## Randomly insert some missing data
+dataMatrix2[sample(1:100,size = 40, replace = FALSE)] <- NA
+svd1 <- svd(scale(dataMatrix2))  ## Doesn't work!
+```
+
+```
+## Error in svd(scale(dataMatrix2)): infinite or missing values in 'x'
+```
+
+
+---
+
+## Imputación {impute}
+
+
+```r
+library(impute)  ## Available from http://bioconductor.org
+dataMatrix2 <- dataMatrixOrdered
+dataMatrix2[sample(1:100,size=40,replace=FALSE)] <- NA
+dataMatrix2 <- impute.knn(dataMatrix2)$data
+svd1 <- svd(scale(dataMatrixOrdered)); svd2 <- svd(scale(dataMatrix2))
+par(mfrow=c(1,2)); plot(svd1$v[,1],pch=19); plot(svd2$v[,1],pch=19)
+```
+
+<img src="assets/fig/unnamed-chunk-63-1.png" title="plot of chunk unnamed-chunk-63" alt="plot of chunk unnamed-chunk-63" style="display: block; margin: auto;" />
+
+
+
+---
+
+## Ejemplo 
+
+<!-- ## source("http://dl.dropbox.com/u/7710864/courseraPublic/myplclust.R") -->
+
+
+```r
+load("data/face.rda")
+image(t(faceData)[,nrow(faceData):1])
+```
+
+<img src="assets/fig/loadFaceData -1.png" title="plot of chunk loadFaceData " alt="plot of chunk loadFaceData " style="display: block; margin: auto;" />
+
+
+---
+
+## Ejemplo - varianza explicada
+
+
+```r
+svd1 <- svd(scale(faceData))
+plot(svd1$d^2/sum(svd1$d^2),pch=19,xlab="Singular vector",ylab="Variance explained")
+```
+
+<img src="assets/fig/unnamed-chunk-64-1.png" title="plot of chunk unnamed-chunk-64" alt="plot of chunk unnamed-chunk-64" style="display: block; margin: auto;" />
+
+---
+
+## Ejemplo - Crear aproximaciones
+
+
+```r
+svd1 <- svd(scale(faceData))
+## Note that %*% is matrix multiplication
+
+# Here svd1$d[1] is a constant
+approx1 <- svd1$u[,1] %*% t(svd1$v[,1]) * svd1$d[1]
+
+# In these examples we need to make the diagonal matrix out of d
+approx5 <- svd1$u[,1:5] %*% diag(svd1$d[1:5])%*% t(svd1$v[,1:5]) 
+approx10 <- svd1$u[,1:10] %*% diag(svd1$d[1:10])%*% t(svd1$v[,1:10]) 
+```
+
+---
+
+## Ejemplo - gráfico 
+
+
+```r
+par(mfrow=c(1,4))
+image(t(approx1)[,nrow(approx1):1], main = "(a)")
+image(t(approx5)[,nrow(approx5):1], main = "(b)")
+image(t(approx10)[,nrow(approx10):1], main = "(c)")
+image(t(faceData)[,nrow(faceData):1], main = "(d)")  ## Original data
+```
+
+<img src="assets/fig/unnamed-chunk-65-1.png" title="plot of chunk unnamed-chunk-65" alt="plot of chunk unnamed-chunk-65" style="display: block; margin: auto;" />
+
+
+---
+
+## ¿Podemos encontrar cosas cercanas?
+
+- ¿Cómo definimos cercanía?
+- ¿Cómo agrupar cosas?
+- ¿Cómo visualizamos los grupos?
+- ¿Cómo interpretamos los grupos?
+
+
+---
+
+## ¿Cómo definimos cercanía?
+
+- Paso más importante 
+    - Basura entra $\longrightarrow$ basura sale 
+- Distancia o similitud
+    - Continuas - distancia euclidiana
+    - Continuas - correlación similitud 
+    - Binaría - distancia de manhattan
+- Escoja una distancia / o mediada de similaridad que tenga sentido para su problema
+  
+
+---
+
+## K-means clustering
+
+- Un enfoque de partición
+    - Fija un número de clusters
+    - Obtiene los "centroides" de cada cluster
+    - Asignar los elementos al centroide más cercano
+    - Recalcular los centroides
+- Requiere
+    - Una métrica de distancia definida
+    - Un número de clusters
+    - Una sugerencia para el inicio del centroide  
+- Produce
+    - Estimación final de los centroides del cluster
+    - Una asignación de cada punto a los clusters
+  
+
+---
+
+## K-means clustering -  Ejemplo
+
+
+
+```r
+set.seed(1234); par(mar=c(0,0,0,0))
+x <- rnorm(12,mean=rep(1:3,each=4),sd=0.2)
+y <- rnorm(12,mean=rep(c(1,2,1),each=4),sd=0.2)
+plot(x,y,col="blue",pch=19,cex=2)
+text(x+0.05,y+0.05,labels=as.character(1:12))
+```
+
+<img src="assets/fig/createData-1.png" title="plot of chunk createData" alt="plot of chunk createData" style="display: block; margin: auto;" />
+
+
+---
+
+## K-means clustering -  Centroides de inicio
+
+
+<img src="assets/fig/unnamed-chunk-66-1.png" title="plot of chunk unnamed-chunk-66" alt="plot of chunk unnamed-chunk-66" style="display: block; margin: auto;" />
+
+---
+
+## K-means clustering -  Asignar al centróide más cercano
+
+<img src="assets/fig/unnamed-chunk-67-1.png" title="plot of chunk unnamed-chunk-67" alt="plot of chunk unnamed-chunk-67" style="display: block; margin: auto;" />
+
+---
+
+## K-means clustering -  Recalcular los centroides
+
+<img src="assets/fig/unnamed-chunk-68-1.png" title="plot of chunk unnamed-chunk-68" alt="plot of chunk unnamed-chunk-68" style="display: block; margin: auto;" />
+
+
+---
+
+## K-means clustering -  Reasignar valores
+
+<img src="assets/fig/unnamed-chunk-69-1.png" title="plot of chunk unnamed-chunk-69" alt="plot of chunk unnamed-chunk-69" style="display: block; margin: auto;" />
+
+
+
+---
+
+## K-means clustering -  Actualización centróides
+
+<img src="assets/fig/unnamed-chunk-70-1.png" title="plot of chunk unnamed-chunk-70" alt="plot of chunk unnamed-chunk-70" style="display: block; margin: auto;" />
+
+
+---
+
+## `kmeans()`
+
+- Parámetros importantes: _x_, _centers_, _iter.max_, _nstart_
+
+
+```r
+dataFrame <- data.frame(x,y)
+kmeansObj <- kmeans(dataFrame, centers = 3)
+names(kmeansObj)
+```
+
+```
+## [1] "cluster"      "centers"      "totss"        "withinss"    
+## [5] "tot.withinss" "betweenss"    "size"         "iter"        
+## [9] "ifault"
+```
+
+```r
+kmeansObj$cluster
+```
+
+```
+##  [1] 3 3 3 3 1 1 1 1 2 2 2 2
+```
+
+---
+
+## `kmeans()`
+
+
+```r
+par(mar=rep(0.2,4))
+plot(x,y,col=kmeansObj$cluster,pch=19,cex=2)
+points(kmeansObj$centers,col=1:3,pch=3,cex=3,lwd=3)
+```
+
+<img src="assets/fig/unnamed-chunk-71-1.png" title="plot of chunk unnamed-chunk-71" alt="plot of chunk unnamed-chunk-71" style="display: block; margin: auto;" />
+
+---
+
+## Heatmaps
+
+
+```r
+set.seed(1234)
+dataMatrix <- as.matrix(dataFrame)[sample(1:12),]
+kmeansObj2 <- kmeans(dataMatrix,centers=3)
+par(mfrow=c(1,2), mar = c(2, 4, 0.1, 0.1))
+image(t(dataMatrix)[,nrow(dataMatrix):1],yaxt="n")
+image(t(dataMatrix)[,order(kmeansObj$cluster)],yaxt="n")
+```
+
+<img src="assets/fig/unnamed-chunk-72-1.png" title="plot of chunk unnamed-chunk-72" alt="plot of chunk unnamed-chunk-72" style="display: block; margin: auto;" />
+
+
+
+---
+
+## Clustering Jerárquico
+
+- Un enfoque aglomerativo
+    - Encuentra las dos observaciones más cercanas
+    - Póngalos juntos
+    - Encontrar el siguiente más cercano
+- Requiere
+    - Una distancia definida
+    - Un enfoque de fusión
+- Produce
+    - Un árbol que muestra lo cerca que están las observaciones entre sí
+
+
+---
+
+
+## ¿Cómo definimos cercanía?
+
+- Paso más importante 
+    - Basura entra $\longrightarrow$ basura sale 
+- Distancia o similitud
+    - Continuas - distancia euclidiana
+    - Continuas - correlación similitud 
+    - Binaría - distancia de manhattan
+- Escoja una distancia / o mediada de similaridad que tenga sentido para su problema
+  
+
+---
+
+## Ejemplo de distancias - Euclideana
+
+<center>![](assets/img/distanciae.png)</center>
+
+[http://rafalab.jhsph.edu/688/lec/lecture5-clustering.pdf](http://rafalab.jhsph.edu/688/lec/lecture5-clustering.pdf)
+
+
+---
+
+## Ejemplo de distancias - Euclideana
+
+<center>![](assets/img/distanciae1.png)</center>
+
+En general:
+
+$$\sqrt{(A_1-A_2)^2 + (B_1-B_2)^2 + \ldots + (Z_1-Z_2)^2}$$
+[http://rafalab.jhsph.edu/688/lec/lecture5-clustering.pdf](http://rafalab.jhsph.edu/688/lec/lecture5-clustering.pdf)
+
+
+
+---
+
+## Ejemplo de distancias - Manhattan
+
+<center>![](assets/img/manhatan.png)</center>
+
+En general:
+
+$$|A_1-A_2| + |B_1-B_2| + \ldots + |Z_1-Z_2|$$
+
+[http://en.wikipedia.org/wiki/Taxicab_geometry](http://en.wikipedia.org/wiki/Taxicab_geometry)
+
+
+
+---
+
+## Clustering Jerárquico - Ejemplo
+
+
+```r
+set.seed(1234); par(mar=c(0,0,0,0))
+x <- rnorm(12,mean=rep(1:3,each=4),sd=0.2)
+y <- rnorm(12,mean=rep(c(1,2,1),each=4),sd=0.2)
+plot(x,y,col="blue",pch=19,cex=2)
+text(x+0.05,y+0.05,labels=as.character(1:12))
+```
+
+<img src="assets/fig/unnamed-chunk-73-1.png" title="plot of chunk unnamed-chunk-73" alt="plot of chunk unnamed-chunk-73" style="display: block; margin: auto;" />
+
+
+---
+
+## Clustering Jerárquico - `dist`
+
+- Parámetros Importantes: _x_,_method_
+
+```r
+dataFrame <- data.frame(x = x, y = y)
+dist(dataFrame)
+```
+
+```
+##             1          2          3          4          5          6
+## 2  0.34120511                                                       
+## 3  0.57493739 0.24102750                                            
+## 4  0.26381786 0.52578819 0.71861759                                 
+## 5  1.69424700 1.35818182 1.11952883 1.80666768                      
+## 6  1.65812902 1.31960442 1.08338841 1.78081321 0.08150268           
+## 7  1.49823399 1.16620981 0.92568723 1.60131659 0.21110433 0.21666557
+## 8  1.99149025 1.69093111 1.45648906 2.02849490 0.61704200 0.69791931
+## 9  2.13629539 1.83167669 1.67835968 2.35675598 1.18349654 1.11500116
+## 10 2.06419586 1.76999236 1.63109790 2.29239480 1.23847877 1.16550201
+## 11 2.14702468 1.85183204 1.71074417 2.37461984 1.28153948 1.21077373
+## 12 2.05664233 1.74662555 1.58658782 2.27232243 1.07700974 1.00777231
+##             7          8          9         10         11
+## 2                                                        
+## 3                                                        
+## 4                                                        
+## 5                                                        
+## 6                                                        
+## 7                                                        
+## 8  0.65062566                                            
+## 9  1.28582631 1.76460709                                 
+## 10 1.32063059 1.83517785 0.14090406                      
+## 11 1.37369662 1.86999431 0.11624471 0.08317570           
+## 12 1.17740375 1.66223814 0.10848966 0.19128645 0.20802789
+```
+
+---
+
+## Clustering Jerárquico - #1
+
+<img src="assets/fig/unnamed-chunk-75-1.png" title="plot of chunk unnamed-chunk-75" alt="plot of chunk unnamed-chunk-75" style="display: block; margin: auto;" />
+
+
+
+---
+
+## Clustering Jerárquico - #2
+
+<img src="assets/fig/unnamed-chunk-76-1.png" title="plot of chunk unnamed-chunk-76" alt="plot of chunk unnamed-chunk-76" style="display: block; margin: auto;" />
+
+
+
+---
+
+## Clustering Jerárquico - #3
+
+<img src="assets/fig/unnamed-chunk-77-1.png" title="plot of chunk unnamed-chunk-77" alt="plot of chunk unnamed-chunk-77" style="display: block; margin: auto;" />
+
+
+
+---
+
+## Clustering Jerárquico - hclust
+
+
+```r
+dataFrame <- data.frame(x=x,y=y)
+distxy <- dist(dataFrame)
+hClustering <- hclust(distxy)
+plot(hClustering)
+```
+
+<img src="assets/fig/unnamed-chunk-78-1.png" title="plot of chunk unnamed-chunk-78" alt="plot of chunk unnamed-chunk-78" style="display: block; margin: auto;" />
+
+
+---
+
+## Mejores dendrogramas
+
+
+```r
+myplclust <- function( hclust, lab=hclust$labels, lab.col=rep(1,length(hclust$labels)), hang=0.1,...){
+  ## modifiction of plclust for plotting hclust objects *in colour*!
+  ## Copyright Eva KF Chan 2009
+  ## Arguments:
+  ##    hclust:    hclust object
+  ##    lab:        a character vector of labels of the leaves of the tree
+  ##    lab.col:    colour for the labels; NA=default device foreground colour
+  ##    hang:     as in hclust & plclust
+  ## Side effect:
+  ##    A display of hierarchical cluster with coloured leaf labels.
+  y <- rep(hclust$height,2); x <- as.numeric(hclust$merge)
+  y <- y[which(x<0)]; x <- x[which(x<0)]; x <- abs(x)
+  y <- y[order(x)]; x <- x[order(x)]
+  plot( hclust, labels=FALSE, hang=hang, ... )
+  text( x=x, y=y[hclust$order]-(max(hclust$height)*hang),
+        labels=lab[hclust$order], col=lab.col[hclust$order], 
+        srt=90, adj=c(1,0.5), xpd=NA, ... )
+}
+```
+
+
+---
+
+## Mejores dendrogramas
+
+
+```r
+dataFrame <- data.frame(x=x,y=y)
+distxy <- dist(dataFrame)
+hClustering <- hclust(distxy)
+myplclust(hClustering,lab=rep(1:3,each=4),lab.col=rep(1:3,each=4))
+```
+
+<img src="assets/fig/unnamed-chunk-79-1.png" title="plot of chunk unnamed-chunk-79" alt="plot of chunk unnamed-chunk-79" style="display: block; margin: auto;" />
+
+---
+
+## Fusión de puntos - completa
+
+<img src="assets/fig/unnamed-chunk-80-1.png" title="plot of chunk unnamed-chunk-80" alt="plot of chunk unnamed-chunk-80" style="display: block; margin: auto;" />
+
+
+
+---
+
+## Fusión de puntos - promedio
+
+<img src="assets/fig/unnamed-chunk-81-1.png" title="plot of chunk unnamed-chunk-81" alt="plot of chunk unnamed-chunk-81" style="display: block; margin: auto;" />
+
+
+---
+
+## `heatmap()`
+
+
+```r
+dataFrame <- data.frame(x=x,y=y)
+set.seed(143)
+dataMatrix <- as.matrix(dataFrame)[sample(1:12),]
+heatmap(dataMatrix)
+```
+
+<img src="assets/fig/unnamed-chunk-82-1.png" title="plot of chunk unnamed-chunk-82" alt="plot of chunk unnamed-chunk-82" style="display: block; margin: auto;" />
+
+
+
+---
+
+

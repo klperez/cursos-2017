@@ -4092,6 +4092,913 @@ combPredV &lt;- predict(combModFit,predVDF)
 </slide>
 
 <slide class="" id="slide-193" style="background:;">
+  <hgroup>
+    <h2>Matriz de datos</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">set.seed(12345); par(mar = rep(0.2,4))
+dataMatrix &lt;- matrix(rnorm(400),nrow = 40)
+image(1:10,1:40,t(dataMatrix)[,nrow(dataMatrix):1])
+</code></pre>
+
+<p><img src="assets/fig/randomData-1.png" title="plot of chunk randomData" alt="plot of chunk randomData" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-194" style="background:;">
+  <hgroup>
+    <h2>Cluster de los datos</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">par(mar = rep(0.2,4))
+heatmap(dataMatrix)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-52-1.png" title="plot of chunk unnamed-chunk-52" alt="plot of chunk unnamed-chunk-52" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-195" style="background:;">
+  <hgroup>
+    <h2>¿Qué pasa si agregamos un patrón?</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">set.seed(678910)
+for (i in 1:40) {
+  # flip a coin
+  coinFlip &lt;- rbinom(1,size = 1,prob = 0.5)
+  # if coin is heads add a common pattern to that row
+  if (coinFlip) {
+    dataMatrix[i,] &lt;- dataMatrix[i,] + rep(c(0,3),each = 5)
+  }
+}
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-196" style="background:;">
+  <hgroup>
+    <h2>¿Qué pasa si agregamos un patrón? - Los datos</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">par(mar = rep(0.2,4))
+image(1:10,1:40,t(dataMatrix)[,nrow(dataMatrix):1])
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-53-1.png" title="plot of chunk unnamed-chunk-53" alt="plot of chunk unnamed-chunk-53" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-197" style="background:;">
+  <hgroup>
+    <h2>¿Qué pasa si agregamos un patrón? - El cluster</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">par(mar = rep(0.2,4))
+heatmap(dataMatrix)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-54-1.png" title="plot of chunk unnamed-chunk-54" alt="plot of chunk unnamed-chunk-54" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-198" style="background:;">
+  <hgroup>
+    <h2>Patrones en filas y columnas</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">hh &lt;- hclust(dist(dataMatrix)); dataMatrixOrdered &lt;- dataMatrix[hh$order,]
+par(mfrow = c(1,3))
+image(t(dataMatrixOrdered)[,nrow(dataMatrixOrdered):1])
+plot(rowMeans(dataMatrixOrdered),40:1,xlab = &quot;Row Mean&quot;,
+     ylab = &quot;Row&quot;,pch = 19)
+plot(colMeans(dataMatrixOrdered),xlab = &quot;Column&quot;,
+     ylab = &quot;Column Mean&quot;,pch = 19)
+</code></pre>
+
+<p><img src="assets/fig/oChunk-1.png" title="plot of chunk oChunk" alt="plot of chunk oChunk" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-199" style="background:;">
+  <hgroup>
+    <h2>Problemas relacionados</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Cuando se tienen múltiples variables  \(X_1,\ldots,X_n\), así \(X_1 = (X_{11},\ldots,X_{1m})\)</p>
+
+<ul>
+<li><p>Encuentre un nuevo conjunto de variables multivariadas que no estén correlacionadas y explique la mayor varianza posible.</p></li>
+<li><p>Si se unen todas las variables en una matriz, encuentra la mejor matriz creada con menos variables (rango inferior) que explica los datos originales.</p></li>
+</ul>
+
+<p>La meta principal es <font color="#330066"> estadística</font> la segunda meta es <font color="#993300">compresión de los datos </font>.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-200" style="background:;">
+  <hgroup>
+    <h2>Soluciones relacionadas - PCA/SVD</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><strong>SVD</strong></p>
+
+<p>Si \(X\) es una matriz con cada variable en una columna y cada observación en una fila, entonces la SVD es una &quot;descomposición de la matriz&quot;
+\[ X = UDV^T\]</p>
+
+<p>Donde la columnas de \(U\) son ortogonales, las columnas de \(V\) son ortogonales  y \(D\) es la matriz diagonal (valores singulares). </p>
+
+<p><strong>PCA</strong></p>
+
+<p>Los componentes principales son iguales a los valores singulares si se escala las variables primero.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-201" style="background:;">
+  <hgroup>
+    <h2>Componentes de la SVD - \(u\) y \(v\)</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">svd1 &lt;- svd(scale(dataMatrixOrdered))
+par(mfrow = c(1,3))
+image(t(dataMatrixOrdered)[,nrow(dataMatrixOrdered):1])
+plot(svd1$u[,1],40:1,xlab = &quot;Row&quot;,
+     ylab = &quot;First left singular vector&quot;, pch = 19)
+plot(svd1$v[,1],xlab = &quot;Column&quot;,
+     ylab = &quot;First right singular vector&quot;, pch = 19)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-55-1.png" title="plot of chunk unnamed-chunk-55" alt="plot of chunk unnamed-chunk-55" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-202" style="background:;">
+  <hgroup>
+    <h2>Componentes de la SVD - Varianza explicada</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">par(mfrow = c(1,2))
+plot(svd1$d, xlab = &quot;Column&quot;, ylab = &quot;Singular value&quot;, pch = 19)
+plot(svd1$d^2/sum(svd1$d^2), xlab = &quot;Column&quot;, ylab = &quot;Prop. of variance explained&quot;, pch = 19)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-56-1.png" title="plot of chunk unnamed-chunk-56" alt="plot of chunk unnamed-chunk-56" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-203" style="background:;">
+  <hgroup>
+    <h2>Relación con los componentes principales</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">svd1 &lt;- svd(scale(dataMatrixOrdered))
+pca1 &lt;- prcomp(dataMatrixOrdered, scale = TRUE)
+plot(pca1$rotation[,1],svd1$v[,1], pch = 19, xlab = &quot;Principal Component 1&quot;, ylab = &quot;Right Singular Vector 1&quot;)
+abline(c(0,1))
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-57-1.png" title="plot of chunk unnamed-chunk-57" alt="plot of chunk unnamed-chunk-57" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-204" style="background:;">
+  <hgroup>
+    <h2>Componentes de la  SVD - Varianza explicada</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">constantMatrix &lt;- dataMatrixOrdered*0
+for (i in 1:dim(dataMatrixOrdered)[1]) { 
+    constantMatrix[i,] &lt;- rep(c(0,1),each = 5)}
+svd1 &lt;- svd(constantMatrix)
+par(mfrow = c(1,3))
+image(t(constantMatrix)[,nrow(constantMatrix):1])
+plot(svd1$d, xlab = &quot;Column&quot;, ylab = &quot;Singular value&quot;, pch = 19)
+plot(svd1$d^2/sum(svd1$d^2), xlab = &quot;Column&quot;, ylab = &quot;Prop. of variance explained&quot;, pch = 19)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-58-1.png" title="plot of chunk unnamed-chunk-58" alt="plot of chunk unnamed-chunk-58" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-205" style="background:;">
+  <hgroup>
+    <h2>¿Qué pasa si agregamos un patrón?</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">set.seed(678910)
+for(i in 1:40){
+  # flip a coin
+  coinFlip1 &lt;- rbinom(1, size = 1, prob = 0.5)
+  coinFlip2 &lt;- rbinom(1, size = 1, prob = 0.5)
+  # if coin is heads add a common pattern to that row
+  if(coinFlip1){
+    dataMatrix[i,] &lt;- dataMatrix[i,] + rep(c(0,5),each = 5)
+  }
+  if(coinFlip2){
+    dataMatrix[i,] &lt;- dataMatrix[i,] + rep(c(0,5),5)
+  }
+}
+hh &lt;- hclust(dist(dataMatrix)); dataMatrixOrdered &lt;- dataMatrix[hh$order,]
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-206" style="background:;">
+  <hgroup>
+    <h2>Descomposición en valores singulares - patrones verdaderos</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">svd2 &lt;- svd(scale(dataMatrixOrdered))
+par(mfrow = c(1,3))
+image(t(dataMatrixOrdered)[,nrow(dataMatrixOrdered):1])
+plot(rep(c(0,1), each = 5), pch = 19, xlab = &quot;Column&quot;,ylab = &quot;Pattern 1&quot;)
+plot(rep(c(0,1),5), pch = 19, xlab = &quot;Column&quot;, ylab = &quot;Pattern 2&quot;)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-59-1.png" title="plot of chunk unnamed-chunk-59" alt="plot of chunk unnamed-chunk-59" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-207" style="background:;">
+  <hgroup>
+    <h2>\(v\) y patrones de varianza en filas</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">svd2 &lt;- svd(scale(dataMatrixOrdered))
+par(mfrow = c(1,3))
+image(t(dataMatrixOrdered)[,nrow(dataMatrixOrdered):1])
+plot(svd2$v[,1], pch = 19, xlab = &quot;Column&quot;,ylab=&quot;First right singular vector&quot;)
+plot(svd2$v[,2],pch=19,xlab=&quot;Column&quot;,ylab=&quot;Second right singular vector&quot;)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-60-1.png" title="plot of chunk unnamed-chunk-60" alt="plot of chunk unnamed-chunk-60" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-208" style="background:;">
+  <hgroup>
+    <h2>\(d\) y la varianza explicada</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">svd1 &lt;- svd(scale(dataMatrixOrdered))
+par(mfrow = c(1,2))
+plot(svd1$d,xlab = &quot;Column&quot;, ylab = &quot;Singular value&quot;, pch = 19)
+plot(svd1$d^2/sum(svd1$d^2), xlab = &quot;Column&quot;, 
+     ylab = &quot;Percent of variance explained&quot;,pch = 19)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-61-1.png" alt="plot of chunk unnamed-chunk-61"></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-209" style="background:;">
+  <hgroup>
+    <h2>valores faltantes</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">dataMatrix2 &lt;- dataMatrixOrdered
+## Randomly insert some missing data
+dataMatrix2[sample(1:100,size = 40, replace = FALSE)] &lt;- NA
+svd1 &lt;- svd(scale(dataMatrix2))  ## Doesn&#39;t work!
+</code></pre>
+
+<pre><code>## Error in svd(scale(dataMatrix2)): infinite or missing values in &#39;x&#39;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-210" style="background:;">
+  <hgroup>
+    <h2>Imputación {impute}</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">library(impute)  ## Available from http://bioconductor.org
+dataMatrix2 &lt;- dataMatrixOrdered
+dataMatrix2[sample(1:100,size=40,replace=FALSE)] &lt;- NA
+dataMatrix2 &lt;- impute.knn(dataMatrix2)$data
+svd1 &lt;- svd(scale(dataMatrixOrdered)); svd2 &lt;- svd(scale(dataMatrix2))
+par(mfrow=c(1,2)); plot(svd1$v[,1],pch=19); plot(svd2$v[,1],pch=19)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-63-1.png" title="plot of chunk unnamed-chunk-63" alt="plot of chunk unnamed-chunk-63" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-211" style="background:;">
+  <hgroup>
+    <h2>Ejemplo</h2>
+  </hgroup>
+  <article data-timings="">
+    <!-- ## source("http://dl.dropbox.com/u/7710864/courseraPublic/myplclust.R") -->
+
+<pre><code class="r">load(&quot;data/face.rda&quot;)
+image(t(faceData)[,nrow(faceData):1])
+</code></pre>
+
+<p><img src="assets/fig/loadFaceData -1.png" title="plot of chunk loadFaceData " alt="plot of chunk loadFaceData " style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-212" style="background:;">
+  <hgroup>
+    <h2>Ejemplo - varianza explicada</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">svd1 &lt;- svd(scale(faceData))
+plot(svd1$d^2/sum(svd1$d^2),pch=19,xlab=&quot;Singular vector&quot;,ylab=&quot;Variance explained&quot;)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-64-1.png" title="plot of chunk unnamed-chunk-64" alt="plot of chunk unnamed-chunk-64" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-213" style="background:;">
+  <hgroup>
+    <h2>Ejemplo - Crear aproximaciones</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">svd1 &lt;- svd(scale(faceData))
+## Note that %*% is matrix multiplication
+
+# Here svd1$d[1] is a constant
+approx1 &lt;- svd1$u[,1] %*% t(svd1$v[,1]) * svd1$d[1]
+
+# In these examples we need to make the diagonal matrix out of d
+approx5 &lt;- svd1$u[,1:5] %*% diag(svd1$d[1:5])%*% t(svd1$v[,1:5]) 
+approx10 &lt;- svd1$u[,1:10] %*% diag(svd1$d[1:10])%*% t(svd1$v[,1:10]) 
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-214" style="background:;">
+  <hgroup>
+    <h2>Ejemplo - gráfico</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">par(mfrow=c(1,4))
+image(t(approx1)[,nrow(approx1):1], main = &quot;(a)&quot;)
+image(t(approx5)[,nrow(approx5):1], main = &quot;(b)&quot;)
+image(t(approx10)[,nrow(approx10):1], main = &quot;(c)&quot;)
+image(t(faceData)[,nrow(faceData):1], main = &quot;(d)&quot;)  ## Original data
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-65-1.png" title="plot of chunk unnamed-chunk-65" alt="plot of chunk unnamed-chunk-65" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-215" style="background:;">
+  <hgroup>
+    <h2>¿Podemos encontrar cosas cercanas?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>¿Cómo definimos cercanía?</li>
+<li>¿Cómo agrupar cosas?</li>
+<li>¿Cómo visualizamos los grupos?</li>
+<li>¿Cómo interpretamos los grupos?</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-216" style="background:;">
+  <hgroup>
+    <h2>¿Cómo definimos cercanía?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Paso más importante 
+
+<ul>
+<li>Basura entra \(\longrightarrow\) basura sale </li>
+</ul></li>
+<li>Distancia o similitud
+
+<ul>
+<li>Continuas - distancia euclidiana</li>
+<li>Continuas - correlación similitud </li>
+<li>Binaría - distancia de manhattan</li>
+</ul></li>
+<li>Escoja una distancia / o mediada de similaridad que tenga sentido para su problema</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-217" style="background:;">
+  <hgroup>
+    <h2>K-means clustering</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Un enfoque de partición
+
+<ul>
+<li>Fija un número de clusters</li>
+<li>Obtiene los &quot;centroides&quot; de cada cluster</li>
+<li>Asignar los elementos al centroide más cercano</li>
+<li>Recalcular los centroides</li>
+</ul></li>
+<li>Requiere
+
+<ul>
+<li>Una métrica de distancia definida</li>
+<li>Un número de clusters</li>
+<li>Una sugerencia para el inicio del centroide<br></li>
+</ul></li>
+<li>Produce
+
+<ul>
+<li>Estimación final de los centroides del cluster</li>
+<li>Una asignación de cada punto a los clusters</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-218" style="background:;">
+  <hgroup>
+    <h2>K-means clustering -  Ejemplo</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">set.seed(1234); par(mar=c(0,0,0,0))
+x &lt;- rnorm(12,mean=rep(1:3,each=4),sd=0.2)
+y &lt;- rnorm(12,mean=rep(c(1,2,1),each=4),sd=0.2)
+plot(x,y,col=&quot;blue&quot;,pch=19,cex=2)
+text(x+0.05,y+0.05,labels=as.character(1:12))
+</code></pre>
+
+<p><img src="assets/fig/createData-1.png" title="plot of chunk createData" alt="plot of chunk createData" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-219" style="background:;">
+  <hgroup>
+    <h2>K-means clustering -  Centroides de inicio</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-66-1.png" title="plot of chunk unnamed-chunk-66" alt="plot of chunk unnamed-chunk-66" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-220" style="background:;">
+  <hgroup>
+    <h2>K-means clustering -  Asignar al centróide más cercano</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-67-1.png" title="plot of chunk unnamed-chunk-67" alt="plot of chunk unnamed-chunk-67" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-221" style="background:;">
+  <hgroup>
+    <h2>K-means clustering -  Recalcular los centroides</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-68-1.png" title="plot of chunk unnamed-chunk-68" alt="plot of chunk unnamed-chunk-68" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-222" style="background:;">
+  <hgroup>
+    <h2>K-means clustering -  Reasignar valores</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-69-1.png" title="plot of chunk unnamed-chunk-69" alt="plot of chunk unnamed-chunk-69" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-223" style="background:;">
+  <hgroup>
+    <h2>K-means clustering -  Actualización centróides</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-70-1.png" title="plot of chunk unnamed-chunk-70" alt="plot of chunk unnamed-chunk-70" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-224" style="background:;">
+  <hgroup>
+    <h2><code>kmeans()</code></h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Parámetros importantes: <em>x</em>, <em>centers</em>, <em>iter.max</em>, <em>nstart</em></li>
+</ul>
+
+<pre><code class="r">dataFrame &lt;- data.frame(x,y)
+kmeansObj &lt;- kmeans(dataFrame, centers = 3)
+names(kmeansObj)
+</code></pre>
+
+<pre><code>## [1] &quot;cluster&quot;      &quot;centers&quot;      &quot;totss&quot;        &quot;withinss&quot;    
+## [5] &quot;tot.withinss&quot; &quot;betweenss&quot;    &quot;size&quot;         &quot;iter&quot;        
+## [9] &quot;ifault&quot;
+</code></pre>
+
+<pre><code class="r">kmeansObj$cluster
+</code></pre>
+
+<pre><code>##  [1] 3 3 3 3 1 1 1 1 2 2 2 2
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-225" style="background:;">
+  <hgroup>
+    <h2><code>kmeans()</code></h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">par(mar=rep(0.2,4))
+plot(x,y,col=kmeansObj$cluster,pch=19,cex=2)
+points(kmeansObj$centers,col=1:3,pch=3,cex=3,lwd=3)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-71-1.png" title="plot of chunk unnamed-chunk-71" alt="plot of chunk unnamed-chunk-71" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-226" style="background:;">
+  <hgroup>
+    <h2>Heatmaps</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">set.seed(1234)
+dataMatrix &lt;- as.matrix(dataFrame)[sample(1:12),]
+kmeansObj2 &lt;- kmeans(dataMatrix,centers=3)
+par(mfrow=c(1,2), mar = c(2, 4, 0.1, 0.1))
+image(t(dataMatrix)[,nrow(dataMatrix):1],yaxt=&quot;n&quot;)
+image(t(dataMatrix)[,order(kmeansObj$cluster)],yaxt=&quot;n&quot;)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-72-1.png" title="plot of chunk unnamed-chunk-72" alt="plot of chunk unnamed-chunk-72" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-227" style="background:;">
+  <hgroup>
+    <h2>Clustering Jerárquico</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Un enfoque aglomerativo
+
+<ul>
+<li>Encuentra las dos observaciones más cercanas</li>
+<li>Póngalos juntos</li>
+<li>Encontrar el siguiente más cercano</li>
+</ul></li>
+<li>Requiere
+
+<ul>
+<li>Una distancia definida</li>
+<li>Un enfoque de fusión</li>
+</ul></li>
+<li>Produce
+
+<ul>
+<li>Un árbol que muestra lo cerca que están las observaciones entre sí</li>
+</ul></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-228" style="background:;">
+  <hgroup>
+    <h2>¿Cómo definimos cercanía?</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Paso más importante 
+
+<ul>
+<li>Basura entra \(\longrightarrow\) basura sale </li>
+</ul></li>
+<li>Distancia o similitud
+
+<ul>
+<li>Continuas - distancia euclidiana</li>
+<li>Continuas - correlación similitud </li>
+<li>Binaría - distancia de manhattan</li>
+</ul></li>
+<li>Escoja una distancia / o mediada de similaridad que tenga sentido para su problema</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-229" style="background:;">
+  <hgroup>
+    <h2>Ejemplo de distancias - Euclideana</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/distanciae.png" alt=""></center></p>
+
+<p><a href="http://rafalab.jhsph.edu/688/lec/lecture5-clustering.pdf">http://rafalab.jhsph.edu/688/lec/lecture5-clustering.pdf</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-230" style="background:;">
+  <hgroup>
+    <h2>Ejemplo de distancias - Euclideana</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/distanciae1.png" alt=""></center></p>
+
+<p>En general:</p>
+
+<p>\[\sqrt{(A_1-A_2)^2 + (B_1-B_2)^2 + \ldots + (Z_1-Z_2)^2}\]
+<a href="http://rafalab.jhsph.edu/688/lec/lecture5-clustering.pdf">http://rafalab.jhsph.edu/688/lec/lecture5-clustering.pdf</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-231" style="background:;">
+  <hgroup>
+    <h2>Ejemplo de distancias - Manhattan</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><center><img src="assets/img/manhatan.png" alt=""></center></p>
+
+<p>En general:</p>
+
+<p>\[|A_1-A_2| + |B_1-B_2| + \ldots + |Z_1-Z_2|\]</p>
+
+<p><a href="http://en.wikipedia.org/wiki/Taxicab_geometry">http://en.wikipedia.org/wiki/Taxicab_geometry</a></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-232" style="background:;">
+  <hgroup>
+    <h2>Clustering Jerárquico - Ejemplo</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">set.seed(1234); par(mar=c(0,0,0,0))
+x &lt;- rnorm(12,mean=rep(1:3,each=4),sd=0.2)
+y &lt;- rnorm(12,mean=rep(c(1,2,1),each=4),sd=0.2)
+plot(x,y,col=&quot;blue&quot;,pch=19,cex=2)
+text(x+0.05,y+0.05,labels=as.character(1:12))
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-73-1.png" title="plot of chunk unnamed-chunk-73" alt="plot of chunk unnamed-chunk-73" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-233" style="background:;">
+  <hgroup>
+    <h2>Clustering Jerárquico - <code>dist</code></h2>
+  </hgroup>
+  <article data-timings="">
+    <ul>
+<li>Parámetros Importantes: <em>x</em>,<em>method</em></li>
+</ul>
+
+<pre><code class="r">dataFrame &lt;- data.frame(x = x, y = y)
+dist(dataFrame)
+</code></pre>
+
+<pre><code>##             1          2          3          4          5          6
+## 2  0.34120511                                                       
+## 3  0.57493739 0.24102750                                            
+## 4  0.26381786 0.52578819 0.71861759                                 
+## 5  1.69424700 1.35818182 1.11952883 1.80666768                      
+## 6  1.65812902 1.31960442 1.08338841 1.78081321 0.08150268           
+## 7  1.49823399 1.16620981 0.92568723 1.60131659 0.21110433 0.21666557
+## 8  1.99149025 1.69093111 1.45648906 2.02849490 0.61704200 0.69791931
+## 9  2.13629539 1.83167669 1.67835968 2.35675598 1.18349654 1.11500116
+## 10 2.06419586 1.76999236 1.63109790 2.29239480 1.23847877 1.16550201
+## 11 2.14702468 1.85183204 1.71074417 2.37461984 1.28153948 1.21077373
+## 12 2.05664233 1.74662555 1.58658782 2.27232243 1.07700974 1.00777231
+##             7          8          9         10         11
+## 2                                                        
+## 3                                                        
+## 4                                                        
+## 5                                                        
+## 6                                                        
+## 7                                                        
+## 8  0.65062566                                            
+## 9  1.28582631 1.76460709                                 
+## 10 1.32063059 1.83517785 0.14090406                      
+## 11 1.37369662 1.86999431 0.11624471 0.08317570           
+## 12 1.17740375 1.66223814 0.10848966 0.19128645 0.20802789
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-234" style="background:;">
+  <hgroup>
+    <h2>Clustering Jerárquico - #1</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-75-1.png" title="plot of chunk unnamed-chunk-75" alt="plot of chunk unnamed-chunk-75" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-235" style="background:;">
+  <hgroup>
+    <h2>Clustering Jerárquico - #2</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-76-1.png" title="plot of chunk unnamed-chunk-76" alt="plot of chunk unnamed-chunk-76" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-236" style="background:;">
+  <hgroup>
+    <h2>Clustering Jerárquico - #3</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-77-1.png" title="plot of chunk unnamed-chunk-77" alt="plot of chunk unnamed-chunk-77" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-237" style="background:;">
+  <hgroup>
+    <h2>Clustering Jerárquico - hclust</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">dataFrame &lt;- data.frame(x=x,y=y)
+distxy &lt;- dist(dataFrame)
+hClustering &lt;- hclust(distxy)
+plot(hClustering)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-78-1.png" title="plot of chunk unnamed-chunk-78" alt="plot of chunk unnamed-chunk-78" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-238" style="background:;">
+  <hgroup>
+    <h2>Mejores dendrogramas</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">myplclust &lt;- function( hclust, lab=hclust$labels, lab.col=rep(1,length(hclust$labels)), hang=0.1,...){
+  ## modifiction of plclust for plotting hclust objects *in colour*!
+  ## Copyright Eva KF Chan 2009
+  ## Arguments:
+  ##    hclust:    hclust object
+  ##    lab:        a character vector of labels of the leaves of the tree
+  ##    lab.col:    colour for the labels; NA=default device foreground colour
+  ##    hang:     as in hclust &amp; plclust
+  ## Side effect:
+  ##    A display of hierarchical cluster with coloured leaf labels.
+  y &lt;- rep(hclust$height,2); x &lt;- as.numeric(hclust$merge)
+  y &lt;- y[which(x&lt;0)]; x &lt;- x[which(x&lt;0)]; x &lt;- abs(x)
+  y &lt;- y[order(x)]; x &lt;- x[order(x)]
+  plot( hclust, labels=FALSE, hang=hang, ... )
+  text( x=x, y=y[hclust$order]-(max(hclust$height)*hang),
+        labels=lab[hclust$order], col=lab.col[hclust$order], 
+        srt=90, adj=c(1,0.5), xpd=NA, ... )
+}
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-239" style="background:;">
+  <hgroup>
+    <h2>Mejores dendrogramas</h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">dataFrame &lt;- data.frame(x=x,y=y)
+distxy &lt;- dist(dataFrame)
+hClustering &lt;- hclust(distxy)
+myplclust(hClustering,lab=rep(1:3,each=4),lab.col=rep(1:3,each=4))
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-79-1.png" title="plot of chunk unnamed-chunk-79" alt="plot of chunk unnamed-chunk-79" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-240" style="background:;">
+  <hgroup>
+    <h2>Fusión de puntos - completa</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-80-1.png" title="plot of chunk unnamed-chunk-80" alt="plot of chunk unnamed-chunk-80" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-241" style="background:;">
+  <hgroup>
+    <h2>Fusión de puntos - promedio</h2>
+  </hgroup>
+  <article data-timings="">
+    <p><img src="assets/fig/unnamed-chunk-81-1.png" title="plot of chunk unnamed-chunk-81" alt="plot of chunk unnamed-chunk-81" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-242" style="background:;">
+  <hgroup>
+    <h2><code>heatmap()</code></h2>
+  </hgroup>
+  <article data-timings="">
+    <pre><code class="r">dataFrame &lt;- data.frame(x=x,y=y)
+set.seed(143)
+dataMatrix &lt;- as.matrix(dataFrame)[sample(1:12),]
+heatmap(dataMatrix)
+</code></pre>
+
+<p><img src="assets/fig/unnamed-chunk-82-1.png" title="plot of chunk unnamed-chunk-82" alt="plot of chunk unnamed-chunk-82" style="display: block; margin: auto;" /></p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-243" style="background:;">
   <article data-timings="">
     
   </article>
@@ -5256,8 +6163,308 @@ combPredV &lt;- predict(combModFit,predVDF)
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=193 title='NA'>
+        data-slide=193 title='Matriz de datos'>
          193
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=194 title='Cluster de los datos'>
+         194
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=195 title='¿Qué pasa si agregamos un patrón?'>
+         195
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=196 title='¿Qué pasa si agregamos un patrón? - Los datos'>
+         196
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=197 title='¿Qué pasa si agregamos un patrón? - El cluster'>
+         197
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=198 title='Patrones en filas y columnas'>
+         198
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=199 title='Problemas relacionados'>
+         199
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=200 title='Soluciones relacionadas - PCA/SVD'>
+         200
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=201 title='Componentes de la SVD - \(u\) y \(v\)'>
+         201
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=202 title='Componentes de la SVD - Varianza explicada'>
+         202
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=203 title='Relación con los componentes principales'>
+         203
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=204 title='Componentes de la  SVD - Varianza explicada'>
+         204
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=205 title='¿Qué pasa si agregamos un patrón?'>
+         205
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=206 title='Descomposición en valores singulares - patrones verdaderos'>
+         206
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=207 title='\(v\) y patrones de varianza en filas'>
+         207
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=208 title='\(d\) y la varianza explicada'>
+         208
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=209 title='valores faltantes'>
+         209
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=210 title='Imputación {impute}'>
+         210
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=211 title='Ejemplo'>
+         211
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=212 title='Ejemplo - varianza explicada'>
+         212
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=213 title='Ejemplo - Crear aproximaciones'>
+         213
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=214 title='Ejemplo - gráfico'>
+         214
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=215 title='¿Podemos encontrar cosas cercanas?'>
+         215
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=216 title='¿Cómo definimos cercanía?'>
+         216
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=217 title='K-means clustering'>
+         217
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=218 title='K-means clustering -  Ejemplo'>
+         218
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=219 title='K-means clustering -  Centroides de inicio'>
+         219
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=220 title='K-means clustering -  Asignar al centróide más cercano'>
+         220
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=221 title='K-means clustering -  Recalcular los centroides'>
+         221
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=222 title='K-means clustering -  Reasignar valores'>
+         222
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=223 title='K-means clustering -  Actualización centróides'>
+         223
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=224 title='<code>kmeans()</code>'>
+         224
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=225 title='<code>kmeans()</code>'>
+         225
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=226 title='Heatmaps'>
+         226
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=227 title='Clustering Jerárquico'>
+         227
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=228 title='¿Cómo definimos cercanía?'>
+         228
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=229 title='Ejemplo de distancias - Euclideana'>
+         229
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=230 title='Ejemplo de distancias - Euclideana'>
+         230
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=231 title='Ejemplo de distancias - Manhattan'>
+         231
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=232 title='Clustering Jerárquico - Ejemplo'>
+         232
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=233 title='Clustering Jerárquico - <code>dist</code>'>
+         233
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=234 title='Clustering Jerárquico - #1'>
+         234
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=235 title='Clustering Jerárquico - #2'>
+         235
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=236 title='Clustering Jerárquico - #3'>
+         236
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=237 title='Clustering Jerárquico - hclust'>
+         237
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=238 title='Mejores dendrogramas'>
+         238
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=239 title='Mejores dendrogramas'>
+         239
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=240 title='Fusión de puntos - completa'>
+         240
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=241 title='Fusión de puntos - promedio'>
+         241
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=242 title='<code>heatmap()</code>'>
+         242
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=243 title='NA'>
+         243
       </a>
     </li>
   </ul>
